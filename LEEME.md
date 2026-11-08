@@ -187,11 +187,11 @@ La instalación solo funciona en https (Render) o en localhost (Live Server).
 
 Los peleadores inventados, los generados al azar y los que creás se arman con:
 - `assets/sprites/base.png`: el cuerpo base (tu hoja del peleador pelado), con todas las animaciones.
-- `assets/sprites/peinados.png`: las cabezas con cada peinado (tu hoja de peinados).
+- `assets/sprites/pelos.png`: las capas de pelo (tu carpeta capas_pelo_cuerpo), sin repetidos.
 - `assets/sprites/base-mascara.png`: marca dónde está el short, para cambiarle el color.
-- `data/cuerpo-base.js`: dónde va la cabeza en cada cuadro y la lista de peinados.
-- `js/cuerpos.js`: arma cada peleador (cuerpo + cabeza) y le cambia la piel y el short.
+- `data/cuerpo-base.js`: dónde va la cabeza en cada cuadro (posición y giro) y dónde va cada pelo.
+- `js/cuerpos.js`: arma cada peleador (cuerpo + pelo) y le cambia la piel, el pelo y el short.
 
-En **Crear peleador** elegís peinado, color de piel y color de short. Los guantes quedan negros.
+En **Crear peleador** elegís peinado (o pelado), color de pelo, color de piel y color de short. Los guantes quedan negros.
 Para que los colores cambien, abrí el juego con **Live Server** (o desde Render): abriendo
 `index.html` con doble clic el navegador no deja tocar los pixeles y salen con los colores del dibujo.

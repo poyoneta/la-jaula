@@ -4,6 +4,7 @@ const FLAGS=['ARG','BRA','URU','CHI','PAR','BOL','PER','COL','VEN','ECU','MEX','
 // Apariencia: cuerpo dibujado (tu hoja) + peinado + colores
 const LOOKOPTS=[
  ['peinado','Peinado','head',null],
+ ['pelo','Color de pelo','hairc',['#141110','#3a2416','#6b4423','#a8743a','#d8b46a','#b5502a','#9a9a9a','#e8e4dc']],
  ['skin','Piel','sw',GEN.skins],
  ['shorts','Short','sw',GEN.shorts]
 ];
@@ -28,14 +29,15 @@ const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 function optHtml(k,t,opts){
  const v=draft.look[k]??null;
  if(t==='head'){
-  // cabezas agrupadas como en tu hoja; se dibujan después en cada botón
-  const cur=String(peinadoDe(draftFighter()));let html='',last=null;
-  CB.peinados.forEach((p,i)=>{const g=CB.grupos[i];if(g!==last){html+=`<span class="hgrp">${g}</span>`;last=g;}
-   html+=`<button class="hb-pein" data-lk="${k}" data-lv="${i}" aria-pressed="${cur===String(i)}" aria-label="${g} ${i+1}"><canvas width="${p[2]}" height="${p[3]}" data-ph="${i}"></canvas></button>`;});
+  // pelos agrupados como en tu carpeta; las miniaturas se dibujan después
+  const cur=String(peinadoDe(draftFighter()));let html=`<span class="hgrp">Pelado</span><button class="hb-pein" data-lk="${k}" data-lv="-1" aria-pressed="${cur==='-1'}" aria-label="Pelado"><canvas width="40" height="40" data-ph="-1"></canvas></button>`,last=null;
+  CB.pelos.forEach((p,i)=>{const g=CB.grupos[i];if(g!==last){html+=`<span class="hgrp">${g}</span>`;last=g;}
+   html+=`<button class="hb-pein" data-lk="${k}" data-lv="${i}" aria-pressed="${cur===String(i)}" aria-label="${g} ${i+1}"><canvas width="40" height="40" data-ph="${i}"></canvas></button>`;});
   return html;
  }
  const sw=c=>`<button class="sw" style="background:${c}" data-lk="${k}" data-lv="${c}" aria-pressed="${v===c}" aria-label="Color ${c}"></button>`;
  if(t==='sw')return opts.map(sw).join('');
+ if(t==='hairc')return`<button class="ob" data-lk="${k}" data-lv="" aria-pressed="${!v}">Natural</button>`+opts.map(sw).join('');
  if(t==='swn')return`<button class="ob" data-lk="${k}" data-lv="" aria-pressed="${!v}">Sin vincha</button>`+opts.map(sw).join('');
  return opts.map(([val,lab])=>`<button class="ob" data-lk="${k}" data-lv="${val}" aria-pressed="${v===val}">${lab}</button>`).join('');
 }
@@ -72,12 +74,10 @@ function renderLook(){
  $('#cLook').innerHTML=LOOKOPTS.map(([k,l,t,o])=>`<div class="lrow${t==='head'?' lhead':''}"><span class="ll">${l}</span><div class="opts" role="group" aria-label="${l}">${optHtml(k,t,o)}</div></div>`).join('');
  drawHeadBtns();
 }
-// miniaturas de los peinados (con el tono de piel elegido)
+// miniaturas de los peinados (con la piel y el color de pelo elegidos)
 function drawHeadBtns(){
  if(typeof cbListo==='undefined'||cbListo<3)return;
- const T=hexRGB(draft.look.skin||'#c58a62');
- $('#cLook').querySelectorAll('canvas[data-ph]').forEach(cv=>{const P=CB.peinados[+cv.dataset.ph],g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
-  g.drawImage(cbImg.pein,P[0],P[1],P[2],P[3],0,0,P[2],P[3]);try{const d=g.getImageData(0,0,P[2],P[3]);for(let i=0;i<d.data.length;i+=4)if(d.data[i+3])recolorPiel(d.data,i,T);g.putImageData(d,0,0);}catch(e){}});
+ $('#cLook').querySelectorAll('canvas[data-ph]').forEach(cv=>dibujarCabeza(cv,+cv.dataset.ph,draft.look.skin,draft.look.pelo));
 }
 $('#cRand').onclick=()=>{draft.look=randFighter().look;renderLook();};
 $('#cNew').onclick=()=>{newDraft();renderCreate();$('#cFirst').focus();};
@@ -85,7 +85,7 @@ $('#cLook').addEventListener('click',e=>{
  const b=e.target.closest('[data-lk]');if(!b)return;
  draft.look[b.dataset.lk]=b.dataset.lk==='peinado'?+b.dataset.lv:(b.dataset.lv||null);
  b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
- if(b.dataset.lk==='skin')drawHeadBtns();
+ if(b.dataset.lk==='skin'||b.dataset.lk==='pelo')drawHeadBtns();
 });
 $('#cStats').addEventListener('click',e=>{
  const b=e.target.closest('[data-sk]');if(!b||b.disabled)return;

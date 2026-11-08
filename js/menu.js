@@ -35,7 +35,7 @@ function randFighter(){
  const first=pick(GEN.first),last=pick(GEN.last),sh=pick(GEN.shorts);let tr=pick(GEN.trims);if(tr===sh)tr=sh==='#ffffff'?'#16181d':'#ffffff';
  return{name:first+' '+last,last,nick:`"${pick(GEN.nick)}"`,flag:pick(GEN.flag),style,s,
   look:{skin:pick(GEN.skins),hair:pick(GEN.hairs),hairStyle:pick(GEN.hairStyles),beardStyle:pick(GEN.beards),shorts:sh,trim:tr,gloves:pick(GEN.gloves),tape:pick(GEN.tapes),
-   band:style==='Muay thai'||rnd()<.12?pick(GEN.bands):null,peinado:typeof CUERPO_BASE!=='undefined'?Math.floor(rnd()*CUERPO_BASE.peinados.length):null,body:pick(['lean','normal','normal','heavy']),tattoo:pick(['none','none','arm','sleeve','chest']),pattern:pick(['plain','plain','stripe','split'])}};
+   band:style==='Muay thai'||rnd()<.12?pick(GEN.bands):null,peinado:typeof CUERPO_BASE!=='undefined'?(rnd()<.1?-1:Math.floor(rnd()*CUERPO_BASE.pelos.length)):null,pelo:rnd()<.7?null:pick(['#141110','#3a2416','#6b4423','#a8743a','#d8b46a','#b5502a']),body:pick(['lean','normal','normal','heavy']),tattoo:pick(['none','none','arm','sleeve','chest']),pattern:pick(['plain','plain','stripe','split'])}};
 }
 let gens=[];
 function renderGen(){
