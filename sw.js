@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='ufcpe-v1';
+const VERSION='ufcpe-v2';
 const ARCHIVOS=[
  "./",
  "index.html",

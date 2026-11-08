@@ -103,21 +103,23 @@ function spriteOf(d){
 function spriteFC(f,o){
  const S=spriteOf(f.d),F=S.frames,t=G?G.t:performance.now()/1000;
  let key=o.ko?(F.ko?'ko':'hurt'):o.pose;
- let list=F[key],idx=0;
- if((key==='pwind'||key==='kwind')&&S.plantilla&&F[o.act]){list=F[o.act];idx=0;}
+ let list=F[key],idx=0,wind=false;
+ if((key==='pwind'||key==='kwind')&&S.plantilla&&F[o.act]){list=F[o.act];wind=true;}   // preparación: primer cuadro del golpe
  else if(!list){key='guard';list=F.guard;}
- if(o.walking&&key==='guard'){list=F.walk||F.guard;idx=Math.floor(o.walk/2.4)%list.length;}
+ if(wind)idx=0;
+ else if(o.walking&&key==='guard'){list=F.walk||F.guard;idx=Math.floor(o.walk/2.4)%list.length;}
  else if(key==='guard')idx=Math.floor(t*2.2)%list.length;
  else if(key==='win'||key==='ko')idx=Math.min(list.length-1,Math.floor(t*2)%list.length);
  else if(S.plantilla&&list.length>1)idx=1;
  const[sx,sy,w,h,ax]=list[idx];
  fcx.clearRect(0,0,SPW,SPH);fcx.imageSmoothingEnabled=false;
  if(!S.img.complete||!S.img.naturalWidth)return;
- const dh=key==='crouch'&&!S.plantilla?Math.round(h*1.6):h*2;
- fcx.drawImage(S.img,sx,sy,w,h,SOX-ax*2,SOY-dh,w*2,dh);
+ const k=S.k||2;   // k:1 = hoja en alta resolución, se dibuja tal cual; si no, al doble
+ const dh=key==='crouch'&&!S.plantilla?Math.round(h*1.6):h*k;
+ fcx.drawImage(S.img,sx,sy,w,h,SOX-ax*k,SOY-dh,w*k,dh);
 }
 // Peleador de costado, sprite detallado (mirando a la derecha; se espeja para el otro lado)
-const SPW=130,SPH=124,SOX=58,SOY=118;
+const SPW=180,SPH=124,SOX=82,SOY=118;
 const fc=document.createElement('canvas');fc.width=SPW;fc.height=SPH;const fcx=fc.getContext('2d');
 const oc=document.createElement('canvas');oc.width=SPW;oc.height=SPH;const ocx=oc.getContext('2d');
 function disc(x,y,r,col){c.fillStyle=col;for(let v=-r;v<=r;v++){const w=Math.round(Math.sqrt(Math.max(0,r*r-v*v))+.3);c.fillRect(Math.round(x-w),Math.round(y+v),w*2,1);}}
