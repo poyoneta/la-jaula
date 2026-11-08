@@ -1,4 +1,4 @@
-# La Jaula
+# UFC Pocket Edition
 
 Juego de peleas de MMA en pixel art, vista de costado. Corre en el navegador (compu y celular), sin instalar nada.
 
@@ -41,6 +41,7 @@ la-jaula/
    ├─ tactil.js          Mando táctil transparente para celular en horizontal
    ├─ nube-config.js     Datos de tu proyecto de Supabase (URL y clave anon)
    ├─ nube.js            Guardado en la nube: entrar con email y sincronizar
+   ├─ app.js             Instalar como app, pantalla completa y horizontal
    └─ inicio.js          Arranca todo
 ```
 
@@ -164,3 +165,19 @@ El proyecto ya tiene todo para subirse tal cual (no hay que compilar nada).
 
 La clave *anon* se puede publicar sin problema: la tabla está protegida para que cada uno vea solo lo suyo.
 Nunca pongas la clave *service_role* / *secret* en el juego.
+
+## Instalarlo como app en el celular
+
+El juego es una **app web instalable** (PWA): no hace falta Play Store ni App Store.
+
+- **Android (Chrome):** abrí el link de Render y tocá **⬇ INSTALAR APP** en el menú
+  (o en el menú de Chrome, ⋮ → *Instalar app*). Queda un ícono en el celular, se abre a
+  pantalla completa, siempre acostado, y anda sin internet.
+- **iPhone (Safari):** botón *Compartir* → *Agregar a inicio*. El iPhone no deja trabar la
+  pantalla acostada: si lo ponés vertical, el juego te pide girarlo.
+- **PC (Chrome o Edge):** el ícono de instalar aparece en la barra de direcciones.
+
+Archivos de la app: `manifest.webmanifest` (nombre, ícono, horizontal), `sw.js` (guarda el juego
+para usarlo sin internet) y `assets/icons/`. **Cada vez que subas cambios, aumentá `VERSION` en
+`sw.js`** (ufcpe-v1 → ufcpe-v2…) para que los celulares que ya la instalaron bajen lo nuevo.
+La instalación solo funciona en https (Render) o en localhost (Live Server).

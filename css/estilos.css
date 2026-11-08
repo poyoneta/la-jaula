@@ -6,11 +6,13 @@ body{margin:0}
 /* Layout: una sola pantalla tipo arcade — barras de vida arriba, octágono de costado al centro, botonera abajo. Look único oscuro de arena. */
 :root{
   color-scheme:dark;
-  --bg:#0a0c11; --panel:#131720; --panel2:#1a1f2b; --line:#2a3140; --fg:#eef0f4; --muted:#8c94a6;
-  --red:#e0393b; --redD:#7d1d20; --blue:#3a7bdc; --blueD:#1c3f7a; --gold:#f2c14e; --green:#4fcf6a; --ink:#05060a;
+  /* Paleta UFC: rojo #D20A0A, negro, blanco y grises */
+  --bg:#0f0f0f; --panel:#191919; --panel2:#242424; --line:#333333; --fg:#ffffff; --muted:#a6a6a6;
+  --red:#d20a0a; --redD:#8c0606; --blue:#2c6bd6; --blueD:#163e82; --gold:#d4af37; --green:#3fbf5f; --ink:#000000;
+  --acc:#d20a0a;
   --px:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
   --cond:"Barlow Condensed","Arial Narrow","Roboto Condensed",sans-serif;
-  --hbg:#cfd2d8; --tile:#f4f5f7; --tink:#121318; --tred:#d0202e; --tredD:#9a1520;
+  --hbg:#f2f2f2; --tile:#ffffff; --tink:#111111; --tred:#d20a0a; --tredD:#9b0606;
   --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 html,body{height:100%}
@@ -194,7 +196,7 @@ legend{font-family:var(--px);font-weight:700;font-size:13px;letter-spacing:.08em
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label{font-size:14px;color:var(--muted)}
-input,select{font:inherit;font-size:16px;color:var(--fg);background:var(--ink);border:2px solid var(--line);border-radius:3px;padding:8px;min-height:42px;width:100%;-webkit-user-select:text;user-select:text}
+input,select{box-sizing:border-box;font:inherit;font-size:16px;color:var(--fg);background:var(--ink);border:2px solid var(--line);border-radius:3px;padding:8px;min-height:42px;width:100%;-webkit-user-select:text;user-select:text}
 input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
 .lrow{display:grid;grid-template-columns:104px 1fr;gap:10px;align-items:center;padding-block:4px;border-bottom:1px solid var(--line)}
 .lrow:last-child{border-bottom:0}
@@ -270,7 +272,7 @@ input:focus,select:focus{outline:2px solid var(--gold);outline-offset:1px}
   .pad{display:none!important}
   .keys{display:flex}
 }
-@media (min-width:900px){
+@media (min-width:900px),(orientation:landscape) and (min-width:600px){
   .wrap{max-width:1180px}
   .wrap.narrow{max-width:760px}
   .tiles{grid-template-columns:1.15fr 1fr 1.35fr 1fr;grid-template-rows:repeat(2,clamp(220px,calc((100vh - 190px) / 2),360px));gap:12px}
@@ -421,7 +423,7 @@ table.ficha td{color:#15171c;font-weight:600}
 .pd{display:none;align-items:center;gap:3px}
 body.pad-on .pd{display:inline-flex} body.pad-on .kb{display:none}
 .kb{display:inline-flex;gap:3px}
-@media (max-width:899px){
+@media (max-width:899px) and (orientation:portrait),(max-width:599px){
   .vs-stage{min-height:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#e6e8ec 0,#d2d5db 250px,#20242c 250px,#14171d 100%)}
   .vs-flag{height:250px}
   .vs-fig{bottom:auto;top:16px;height:220px}
@@ -472,7 +474,7 @@ body.pad-on :focus{outline:3px solid var(--gold);outline-offset:2px}
 .sc{background:linear-gradient(90deg,rgba(10,12,17,.5),rgba(10,12,17,0))!important;border-left:2px solid rgba(224,57,59,.8);text-shadow:0 1px 2px #000}
 @media (hover:hover) and (pointer:fine){.ctltip{display:flex}}
 body.pad-on .ctltip{display:flex}
-@media (min-width:900px){
+@media (min-width:900px),(orientation:landscape) and (min-width:600px){
   #fight{max-width:none;padding:0;gap:0}
   #cv{border:0}
   #stage{width:100%}
@@ -522,7 +524,7 @@ body.pad-on .ctltip{display:flex}
 .vb.vpause b{font-size:13px;letter-spacing:.1em}
 /* Aviso de girar el celular */
 .rothint{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;
-  background:rgba(8,9,13,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff}
+  background:#111;color:#fff;border-top:4px solid var(--red)}
 .rothint[hidden]{display:none}
 .rothint h3{margin:6px 0 0;font:800 26px var(--cond);letter-spacing:.06em}
 .rothint p{margin:0 0 8px;color:var(--muted);max-width:280px}
@@ -547,3 +549,115 @@ body.pad-on .ctltip{display:flex}
   .vb.vs{width:58px;height:32px}
 }
 body.pad-on .vpad{display:none!important}
+
+/* ================= Estilo UFC en todos los menús =================
+   Rojo #D20A0A, negro, blanco y grises; títulos rectos, condensados y en mayúsculas. */
+.logo,.tt,.tl,.sh h2,.vs-top h2,.sub2,.banner b,.camp b,.belt,.chip,.tbb,.rank,.card h3,.vsmark{font-style:normal!important;text-transform:uppercase;letter-spacing:.02em}
+.logo{display:flex;align-items:baseline;gap:10px;font-weight:800}
+.logo b{font-size:1.15em;letter-spacing:-.01em;color:#111;padding-right:10px;border-right:3px solid var(--red);line-height:.9}
+.logo span{font-size:.62em;font-weight:700;letter-spacing:.08em;color:#111}
+/* Menú principal: fondo gris claro, barra blanca como la web y mosaicos blancos */
+.home{background:#f2f2f2;color:#111}
+.home .topbar{background:#fff;margin:-16px calc(-1*max(16px,env(safe-area-inset-left,0px))) 0;padding:12px max(16px,env(safe-area-inset-left,0px));box-shadow:0 2px 10px rgba(0,0,0,.08);position:relative}
+.home .topbar::after{content:"";position:absolute;left:50%;bottom:0;width:44px;height:3px;background:var(--red);transform:translateX(-50%)}
+.tbb{border-color:#111;color:#111;letter-spacing:.06em}
+.tbb:hover,.tbb:focus-visible{background:var(--red);border-color:var(--red);color:#fff}
+.chip{background:#111}
+.tile{border-radius:0;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tile:hover,.tile:focus-visible{box-shadow:0 0 0 3px var(--red),0 8px 18px rgba(0,0,0,.18)}
+.tl{color:#6b6b6b;letter-spacing:.1em}
+.ts{color:#555}
+.t-tourney{background:var(--red)}
+.home kbd{background:#111}
+/* Pantallas oscuras: negro con divisores rojos, como "Top Stories" */
+.scr:not(.home):not(.qscr){background:#111}
+.sh{padding-bottom:12px;border-bottom:2px solid var(--red)}
+.sh h2::after{display:none}
+.back{background:#000;border-color:#3a3a3a;color:#fff;letter-spacing:.06em}
+.back:hover,.back:focus-visible{background:var(--red);border-color:var(--red)}
+fieldset,.cprev,.kcard,.match,.offer,.banner,.tape,details,.gcard,.fcard,.pcard{border-radius:0;border-color:#2c2c2c;border-top:3px solid var(--red)}
+.pcard[aria-pressed="true"]{border-color:#fff;border-top-color:var(--red);box-shadow:0 0 0 2px #fff}
+.pcard .lvl,.offer .meta b,.pcard .meta b{color:#fff}
+.sw[aria-pressed="true"]{outline-color:#fff}
+.ob[aria-pressed="true"]{border-color:var(--red);background:var(--red);color:#fff}
+.go{border-radius:0;border-bottom-color:#7a0505;letter-spacing:.08em}
+.go:hover{filter:brightness(1.08)}
+.alt{border-radius:0;background:#1f1f1f;border-color:#3a3a3a}
+.alt:hover,.alt:focus-visible{border-color:var(--red)}
+.link{color:#fff;text-decoration-color:var(--red);text-decoration-thickness:2px}
+button:focus-visible,input:focus,select:focus{outline-color:var(--red)}
+body.pad-on :focus{outline-color:var(--red)}
+.card{border-radius:0;border-color:#2c2c2c;border-top:4px solid var(--red);background:#151515}
+.card h3.win{color:#fff}
+.camp{border-radius:0}.camp:hover,.camp:focus-visible{border-color:var(--red)}
+.ctl h4{color:#fff;border-left:3px solid var(--red);padding-left:8px}
+.tip{border-left-color:var(--red)} .tip b{color:#fff}
+ul.help b,details b{color:#fff;box-shadow:inset 0 -2px var(--red)}
+#cPts{color:#fff}
+/* Elección de peleadores: barra blanca arriba, franja negra abajo */
+.vs-top{background:#fff;color:#111;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.vs-top .back{background:#111;border-color:#111}
+.vs-stage{background:linear-gradient(180deg,#f2f2f2 0%,#dedede 58%,#191919 58.2%,#0f0f0f 100%)}
+.vs-panel{border-top:3px solid var(--red);border-radius:0}
+.g-l1,.g-r1,.dots i.on{background:#111}
+.vs-foot{background:#000}
+.vs-foot .go{border-bottom-width:4px}
+/* Botón de instalar */
+#instBtn{background:var(--red);border-color:var(--red);color:#fff}
+#instBtn:hover{background:#111;border-color:#111}
+
+/* ================= Celular acostado: menús compactos ================= */
+@media (orientation:landscape) and (max-height:520px){
+  .wrap{padding-block:10px 14px;gap:10px;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+  .home .topbar{margin:-10px calc(-1*max(14px,env(safe-area-inset-left,0px))) 0;padding:6px max(14px,env(safe-area-inset-left,0px))}
+  .logo{font-size:24px}
+  .tbb,.chip{font-size:13px;padding:3px 8px}
+  .home .chk{font-size:13px}
+  .tiles{grid-template-rows:repeat(2,calc((100vh - 74px) / 2))!important;gap:8px}
+  .tile{padding:10px}
+  .tt{font-size:clamp(16px,3.2vw,24px)}.tt.big{font-size:clamp(24px,4.6vw,36px)}
+  .tt::after{margin-top:5px;height:3px}
+  .ts{font-size:11px;max-width:none}
+  .tl{font-size:11px;top:7px;left:10px}
+  .hints{display:none}
+  .sh h2,.vs-top h2{font-size:22px}
+  .sh{padding-bottom:8px}
+  .lead{font-size:14px}
+  .cgrid{grid-template-columns:200px 1fr!important;gap:12px}
+  #cPrev,#kPrev{width:144px;height:168px}
+  .kgrid{grid-template-columns:230px 1fr!important;gap:12px}
+  .flist,.pgrid{grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+  .fcard canvas,.pcard canvas,.offer canvas{width:84px;height:72px}
+  .pcard{padding:6px}.pcard .nm{font-size:14px}
+  .stick{padding-block:6px}
+  .go{min-height:46px;font-size:18px}
+  /* Elección de peleadores en una sola pantalla */
+  .qscr .vsscr{height:100%;min-height:0}
+  .vs-top{padding-block:6px;gap:10px}
+  .vs-top select{min-height:34px;padding:4px 8px;font-size:14px;min-width:180px}
+  .vs-stage{min-height:0!important}
+  .vs-panel{top:4%;width:min(56%,560px)}
+  .vs-tabs{padding:4px 8px}
+  .vs-tabname b{font-size:13px}
+  .vs-body{padding:6px 10px 8px}
+  .vs-col{gap:6px}
+  table.ficha{font-size:11px} table.ficha th{font-size:10px;padding-right:6px} table.ficha th,table.ficha td{padding:1px 0}
+  .vs-panel .rings{display:none}
+  .vs-panel{max-height:56%;overflow:auto}
+  #vsStats{padding:6px 10px}
+  .vs-fig{height:70%;bottom:24%}
+  .vs-names{height:26%;gap:10px}
+  .vn .ln{font-size:clamp(22px,4.2vw,40px)}
+  .vn .fn{font-size:13px}
+  .vn .rec{font-size:13px;margin-top:3px}
+  .vn .ar{width:30px;height:30px}
+  .vsmark{font-size:40px}
+  .vs-foot{padding-block:6px;gap:10px}
+  .vs-foot .hint{display:none}
+  .vs-foot .go{min-height:40px}
+  .card{max-height:100%;padding:12px 14px;gap:8px;max-width:640px}
+  .card h3{font-size:22px}
+}
+
+/* ================= Siempre horizontal en el celular ================= */
+.rothint{position:fixed;z-index:50}

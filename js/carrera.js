@@ -89,7 +89,7 @@ function renderCareer(){
   const o=C.opp;
   main=`<h3 class="sub2">${C.title?(C.champ?'DEFENSA DEL TÍTULO':'PELEA POR EL TÍTULO'):'NOCHE DE PELEA'}</h3>
    <div class="offer big ${C.title?'title':''}"><canvas width="56" height="48"></canvas><div><div class="nm">${esc(f.last)} vs ${esc(o.name)}</div><div class="meta">${o.flag} · ${o.style} · <b>${oppRank(o)}</b> · Nivel ${Math.round(ovr(o))} · ${C.title?5:3} rounds</div></div></div>
-   <button class="go" id="kFight">IR A LA JAULA ▶</button>`;
+   <button class="go" id="kFight">IR AL OCTÁGONO ▶</button>`;
  }
  const hist=C.hist.length?`<ol class="hist">${C.hist.map(h=>`<li class="${h.res==='p'?'w':h.res==='r'?'l':'d'}"><b>${h.res==='p'?'G':h.res==='r'?'P':'E'}</b><span>${esc(h.opp)} <small>${h.orank}${h.title?' · título':''}</small></span><small>${h.method}${h.method==='Abandono'?'':` · R${h.round}`}</small></li>`).join('')}</ol>`:'<p class="empty">Todavía no peleaste.</p>';
  B.innerHTML=`${C.last?`<div class="banner ${C.champ?'gold':''}"><span>${esc(C.last)}</span></div>`:''}
