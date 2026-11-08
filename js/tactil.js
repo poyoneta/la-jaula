@@ -3,7 +3,7 @@
    stick izquierdo: caminar / agacharse · □ jab · △ recto · L1+□ / L1+△ cross izq. / der.
    L2+□ o △ uppercut · ○ low kick · ✕ high kick · R1 cubrirse · R2 derribo · II pausa
    En el piso: □ △ ○ son las tres acciones de la botonera. */
-const VP={l1:false,l2:false,stick:null,vertOK:false};
+const VP={l1:false,l2:false,stick:null};
 const touchDev=matchMedia('(pointer:coarse)');
 const isPortrait=()=>innerHeight>innerWidth;
 const vpActive=()=>touchDev.matches&&!isPortrait()&&!PAD.on;
@@ -56,25 +56,18 @@ function vpLabels(m){
  lab('sq',bs[0]||'');lab('tr',bs[1]||'');lab('ci',bs[2]||'');lab('x','');
 }
 
-// Al empezar la pelea en el celular: pantalla completa y horizontal si el navegador lo permite
-function vpStart(){
- if(!touchDev.matches||PAD.on)return checkRot();
- try{
-  const de=document.documentElement,p=!document.fullscreenElement&&de.requestFullscreen?de.requestFullscreen({navigationUI:'hide'}):null;
-  const lock=()=>{try{const q=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(q&&q.catch)q.catch(()=>{});}catch(e){}};
-  if(p&&p.then)p.then(lock,()=>{});else lock();
- }catch(e){}
- checkRot();
-}
-// En vertical, la pelea se frena y pide girar el celular (o seguir en vertical con los botones de abajo)
+// Al empezar la pelea en el celular: pantalla completa y horizontal (si el navegador lo permite)
+function vpStart(){if(touchDev.matches&&typeof forzarHorizontal==='function')forzarHorizontal();checkRot();}
+// En el celular se juega siempre acostado: en vertical se tapa todo y la pelea se frena
 function checkRot(){
- const need=G&&curScreen==='fight'&&touchDev.matches&&!PAD.on&&isPortrait()&&!VP.vertOK;
+ const need=touchDev.matches&&isPortrait();
  $('#rotHint').hidden=!need;
- if(need&&!G.paused){G.paused=true;G.rotPause=true;clearInput();}
- else if(!need&&G&&G.rotPause){G.rotPause=false;if($('#ov').hidden)G.paused=false;}
+ if(G&&curScreen==='fight'){
+  if(need&&!G.paused){G.paused=true;G.rotPause=true;clearInput();}
+  else if(!need&&G.rotPause){G.rotPause=false;if($('#ov').hidden)G.paused=false;}
+ }
  document.body.classList.toggle('vp',vpActive());
 }
-$('#vertOk').addEventListener('click',()=>{VP.vertOK=true;checkRot();});
 window.addEventListener('resize',checkRot);
 window.addEventListener('orientationchange',()=>setTimeout(()=>{checkRot();resize();},250));
-setInterval(checkRot,500);
+setInterval(checkRot,500);checkRot();

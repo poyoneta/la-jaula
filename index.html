@@ -3,7 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>La Jaula</title>
+<title>UFC Pocket Edition</title>
+<meta name="theme-color" content="#d20a0a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="UFC Pocket">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap">
 <link rel="stylesheet" href="css/estilos.css">
@@ -17,11 +25,12 @@
   <section id="home" class="scr home" aria-label="Menú principal">
     <div class="wrap">
       <header class="topbar">
-        <div class="logo">LA <em>JAULA</em></div>
+        <div class="logo"><b>UFC</b><span>POCKET EDITION</span></div>
         <div class="tb-r">
           <span class="chip" id="hRec" hidden></span>
           <label class="chk"><input type="checkbox" id="snd" checked> Sonido</label>
           <button class="tbb" id="fsBtn" hidden>PANTALLA COMPLETA</button>
+          <button class="tbb" id="instBtn" hidden>⬇ INSTALAR APP</button>
           <button class="tbb" id="nubeBtn" hidden>☁ GUARDAR EN LA NUBE</button>
         </div>
       </header>
@@ -241,16 +250,16 @@
       </div>
       <button class="vb vpause" id="vpause" aria-label="Pausa"><b>II</b></button>
     </div>
-    <div class="rothint" id="rotHint" hidden>
-      <div class="rotph"></div>
-      <h3>GIRÁ EL CELULAR</h3>
-      <p>La pelea se juega en horizontal, con el mando en pantalla.</p>
-      <button class="alt" id="vertOk">JUGAR EN VERTICAL</button>
-    </div>
   </section>
 </div>
 
 <div id="ov" hidden><div class="card" id="ovc"></div></div>
+<!-- En el celular se juega siempre acostado -->
+<div class="rothint" id="rotHint" hidden>
+  <div class="rotph"></div>
+  <h3>GIRÁ EL CELULAR</h3>
+  <p>UFC Pocket Edition se juega en horizontal.</p>
+</div>
 
 <!-- El orden importa: cada archivo usa cosas de los anteriores -->
 <script src="js/config.js"></script>
@@ -272,6 +281,7 @@
 <script src="js/tactil.js"></script>
 <script src="js/nube-config.js"></script>
 <script src="js/nube.js"></script>
+<script src="js/app.js"></script>
 <script src="js/inicio.js"></script>
 </body>
 </html>

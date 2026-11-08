@@ -1,7 +1,7 @@
 # Render: sitio estático (no necesita build). Render lo detecta solo al conectar el repo como "Blueprint".
 services:
   - type: web
-    name: la-jaula
+    name: ufc-pocket-edition
     runtime: static
     buildCommand: ""
     staticPublishPath: .
