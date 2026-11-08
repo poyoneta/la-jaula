@@ -661,3 +661,12 @@ ul.help b,details b{color:#fff;box-shadow:inset 0 -2px var(--red)}
 
 /* ================= Siempre horizontal en el celular ================= */
 .rothint{position:fixed;z-index:50}
+
+/* Creador: elegir peinado */
+.lrow.lhead{align-items:start}
+.lhead .opts{max-height:300px;overflow-y:auto;gap:6px;padding:2px}
+.hgrp{flex-basis:100%;font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.hb-pein{padding:3px;background:#202020;border:2px solid #333;line-height:0}
+.hb-pein canvas{display:block;height:46px;width:auto;image-rendering:pixelated}
+.hb-pein[aria-pressed="true"]{border-color:var(--red);background:#2a1212}
+.hb-pein:hover{border-color:#777}

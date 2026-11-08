@@ -12,7 +12,7 @@ function menuLoop(ms){
  requestAnimationFrame(menuLoop);
 }
 // Cuando termina de cargar una hoja de sprites, redibuja los retratos de la pantalla actual
-function onSpriteLoad(){if(G)return;if(curScreen==='quick')renderMenu();else if(curScreen==='create')renderCList();else if(curScreen==='tourney')renderTourney();else if(curScreen==='career')renderCareer();}
+function onSpriteLoad(){if(G)return;if(curScreen==='quick')renderMenu();else if(curScreen==='create'){renderCList();drawHeadBtns();}else if(curScreen==='tourney')renderTourney();else if(curScreen==='career')renderCareer();}
 spriteOf({sprite:'zanella'});
 $('#qDiv').innerHTML=divOptions(qDiv,true);
 $('#qDiv').onchange=e=>{qDiv=e.target.value;selP=selR=null;renderMenu();};

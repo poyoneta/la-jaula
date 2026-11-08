@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='ufcpe-v4';
+const VERSION='ufcpe-v5';
 const ARCHIVOS=[
  "./",
  "index.html",
@@ -36,6 +36,11 @@ const ARCHIVOS=[
  "assets/menu/pelea.png",
  "assets/menu/torneo.png",
  "assets/sprites/alejandro-zanella.png",
+ "assets/sprites/base.png",
+ "assets/sprites/base-mascara.png",
+ "assets/sprites/peinados.png",
+ "data/cuerpo-base.js",
+ "js/cuerpos.js",
  "assets/sprites/allen.png",
  "assets/sprites/andrusca.png",
  "assets/sprites/brito.png",

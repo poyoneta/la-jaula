@@ -42,6 +42,7 @@ la-jaula/
    ├─ nube-config.js     Datos de tu proyecto de Supabase (URL y clave anon)
    ├─ nube.js            Guardado en la nube: entrar con email y sincronizar
    ├─ app.js             Instalar como app, pantalla completa y horizontal
+   ├─ cuerpos.js         Arma los peleadores creados: cuerpo base + peinado + colores
    └─ inicio.js          Arranca todo
 ```
 
@@ -181,3 +182,16 @@ Archivos de la app: `manifest.webmanifest` (nombre, ícono, horizontal), `sw.js`
 para usarlo sin internet) y `assets/icons/`. **Cada vez que subas cambios, aumentá `VERSION` en
 `sw.js`** (ufcpe-v1 → ufcpe-v2…) para que los celulares que ya la instalaron bajen lo nuevo.
 La instalación solo funciona en https (Render) o en localhost (Live Server).
+
+## Peleadores creados con tus dibujos
+
+Los peleadores inventados, los generados al azar y los que creás se arman con:
+- `assets/sprites/base.png`: el cuerpo base (tu hoja del peleador pelado), con todas las animaciones.
+- `assets/sprites/peinados.png`: las cabezas con cada peinado (tu hoja de peinados).
+- `assets/sprites/base-mascara.png`: marca dónde está el short, para cambiarle el color.
+- `data/cuerpo-base.js`: dónde va la cabeza en cada cuadro y la lista de peinados.
+- `js/cuerpos.js`: arma cada peleador (cuerpo + cabeza) y le cambia la piel y el short.
+
+En **Crear peleador** elegís peinado, color de piel y color de short. Los guantes quedan negros.
+Para que los colores cambien, abrí el juego con **Live Server** (o desde Render): abriendo
+`index.html` con doble clic el navegador no deja tocar los pixeles y salen con los colores del dibujo.

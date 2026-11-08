@@ -94,6 +94,7 @@ function drawFront(f,cx,fy,pose,o){
 
 // Busca la hoja de un peleador y la carga la primera vez que se usa
 function spriteOf(d){
+ if(!d.sprite)return typeof cuerpoDe==='function'?cuerpoDe(d):null;   // inventados / creados: cuerpo base + peinado
  const key=d.sprite===1?'zanella':d.sprite,S=SPRITES[key];if(!S)return null;
  if(S.plantilla&&!S.frames)S.frames=framesDePlantilla();
  if(!S.img){S.img=new Image();S.img.onload=()=>{if(typeof onSpriteLoad==='function')onSpriteLoad();};S.img.src=S.src;}
@@ -122,13 +123,13 @@ function spriteFC(f,o){
  else if(golpe)idx=hi;
  const[sx,sy,w,h,ax]=list[idx];
  fcx.clearRect(0,0,SPW,SPH);fcx.imageSmoothingEnabled=false;
- if(!S.img.complete||!S.img.naturalWidth)return;
+ if(S.img instanceof HTMLImageElement&&(!S.img.complete||!S.img.naturalWidth))return;
  const k=S.k||2;   // k:1 = hoja en alta resolución, se dibuja tal cual; si no, al doble
  const dh=key==='crouch'&&!S.plantilla?Math.round(h*1.6):h*k;
  fcx.drawImage(S.img,sx,sy,w,h,SOX-ax*k,SOY-dh,w*k,dh);
 }
 // Peleador de costado, sprite detallado (mirando a la derecha; se espeja para el otro lado)
-const SPW=180,SPH=124,SOX=82,SOY=118;
+const SPW=180,SPH=150,SOX=82,SOY=144;
 const fc=document.createElement('canvas');fc.width=SPW;fc.height=SPH;const fcx=fc.getContext('2d');
 const oc=document.createElement('canvas');oc.width=SPW;oc.height=SPH;const ocx=oc.getContext('2d');
 function disc(x,y,r,col){c.fillStyle=col;for(let v=-r;v<=r;v++){const w=Math.round(Math.sqrt(Math.max(0,r*r-v*v))+.3);c.fillRect(Math.round(x-w),Math.round(y+v),w*2,1);}}
@@ -242,7 +243,7 @@ function drawSide(f,gy,o){
 }
 // Dibuja el sprite con contorno de 1 pixel generado a partir de la silueta
 function blitFighter(f,o,x,gy,face,rot){
- if(f.d.sprite&&spriteOf(f.d))spriteFC(f,o);else{const prev=c;c=fcx;fcx.clearRect(0,0,SPW,SPH);fcx.save();fcx.translate(SOX,0);drawSide(f,SOY,o);fcx.restore();c=prev;}
+ if(spriteOf(f.d))spriteFC(f,o);else{const prev=c;c=fcx;fcx.clearRect(0,0,SPW,SPH);fcx.save();fcx.translate(SOX,0);drawSide(f,SOY,o);fcx.restore();c=prev;}
  ocx.globalCompositeOperation='source-over';ocx.clearRect(0,0,SPW,SPH);ocx.drawImage(fc,0,0);
  ocx.globalCompositeOperation='source-in';ocx.fillStyle=o.sil?o.sil:o.flash?(o.flashCol||'#ffd23f'):(o.hit?'#ffffff':'#07080c');ocx.fillRect(0,0,SPW,SPH);ocx.globalCompositeOperation='source-over';
  const g=c;g.save();g.translate(Math.round(x),0);g.scale(face,1);

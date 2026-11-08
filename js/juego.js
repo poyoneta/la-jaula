@@ -317,7 +317,7 @@ function update(dt){
 function poseOf(f){
  const o={act:f.act,hit:f.hit>0,bob:Math.sin(G.t*5+(f===G.p?0:1.7)),walk:f.walk};let pose='guard';
  if((G.phase==='ko'||G.phase==='end')&&G.res&&f.state!=='ko'&&(G.res.w==='p')===(f===G.p)){o.pose='win';return o;}
- const S=f.d.sprite&&spriteOf(f.d),anim=!!(S&&S.plantilla);   // hojas con todos los cuadros: se anima el golpe entero
+ const S=spriteOf(f.d),anim=!!(S&&S.plantilla);   // hojas con todos los cuadros: se anima el golpe entero
  o.off=f===G.r?.37:0;
  switch(f.state){
   case'wind':{const m=MOVES[f.act];o.prog=1-f.t/(f.tw||1);if(f===G.r){o.flash=Math.floor(G.t*16)%2===0;if(m.td)o.flashCol='#5aa2ff';}pose=m.td?'shoot':m.leg?'kwind':'pwind';break;}
@@ -338,7 +338,7 @@ function renderStand(){
  const order=(p.state==='wind'||p.state==='rec')?[r,p]:[p,r];
  for(const f of order){
   const o=poseOf(f);let rot=0;
-  if(f.state==='ko'){const sk=f.d.sprite&&spriteOf(f.d);rot=sk&&sk.frames.ko?0:-Math.min(1,(2.2-G.koT)/.5)*1.5;o.pose='hurt';o.hurt=1;o.ko=1;}
+  if(f.state==='ko'){const sk=spriteOf(f.d);rot=sk&&sk.frames.ko?0:-Math.min(1,(2.2-G.koT)/.5)*1.5;o.pose='hurt';o.hurt=1;o.ko=1;}
   blitFighter(f,o,f.x,GY,f.face,rot);
  }
  if(G.phase!=='ko'){const px=Math.round(p.x);R(px-3,GY-106,7,2,'#e0393b');R(px-2,GY-104,5,1,'#e0393b');R(px-1,GY-103,3,1,'#e0393b');}
