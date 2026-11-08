@@ -1,0 +1,11 @@
+# Render: sitio estático (no necesita build). Render lo detecta solo al conectar el repo como "Blueprint".
+services:
+  - type: web
+    name: la-jaula
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache

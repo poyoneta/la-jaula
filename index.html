@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La Jaula</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap">
+<link rel="stylesheet" href="css/estilos.css">
+<!-- Imágenes del menú recortadas de tu captura (solo copia local) -->
+<link rel="stylesheet" href="css/menu-imagenes.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ MENÚ PRINCIPAL ============ -->
+  <section id="home" class="scr home" aria-label="Menú principal">
+    <div class="wrap">
+      <header class="topbar">
+        <div class="logo">LA <em>JAULA</em></div>
+        <div class="tb-r">
+          <span class="chip" id="hRec" hidden></span>
+          <label class="chk"><input type="checkbox" id="snd" checked> Sonido</label>
+          <button class="tbb" id="fsBtn" hidden>PANTALLA COMPLETA</button>
+          <button class="tbb" id="nubeBtn" hidden>☁ GUARDAR EN LA NUBE</button>
+        </div>
+      </header>
+      <div class="tiles">
+        <button class="tile t-quick" data-go="quick">
+          <span class="tl">JUGAR</span>
+          <canvas class="tart" id="artQuick" width="140" height="100"></canvas>
+          <span class="tt">PELEA<br>RÁPIDA</span><span class="ts">Elegí dos y a pelear</span>
+        </button>
+        <button class="tile t-career" data-go="career">
+          <canvas class="tart" id="artCareer" width="90" height="100"></canvas>
+          <span class="tt">MODO<br>CARRERA</span><span class="ts" id="careerSub">Del regional al cinturón</span>
+        </button>
+        <button class="tile t-create" data-go="create">
+          <canvas class="tart" id="artCreate" width="90" height="100"></canvas>
+          <span class="tt">CREAR<br>PELEADOR</span><span class="ts">Look y atributos</span>
+        </button>
+        <button class="tile t-tourney" data-go="tourney">
+          <span class="tl">EVENTOS</span>
+          <canvas class="tart" id="artTourney" width="150" height="104"></canvas>
+          <span class="tt big">MODO<br>TORNEO</span><span class="ts">8 peleadores · cuartos, semis y final</span>
+        </button>
+        <button class="tile t-help" data-go="help">
+          <span class="tl">RECOMENDADO</span>
+          <canvas class="tart" id="artHelp" width="90" height="100"></canvas>
+          <span class="tt">CÓMO SE<br>PELEA</span><span class="ts">Controles y consejos</span>
+        </button>
+        <button class="tile t-rand" data-go="quickgen">
+          <canvas class="tart" id="artRand" width="140" height="100"></canvas>
+          <span class="tt">PELEADORES<br>AL AZAR</span><span class="ts">Generá rivales nuevos</span>
+        </button>
+      </div>
+      <footer class="hints"><span><kbd>Enter</kbd> Elegir</span><span><kbd>Esc</kbd> Volver</span><span class="note">Lo que creás y tu carrera se guardan en este navegador.</span></footer>
+    </div>
+  </section>
+
+  <!-- ============ PELEA RÁPIDA ============ -->
+  <section id="quick" class="scr qscr" hidden aria-label="Pelea rápida">
+    <div class="vsscr">
+      <header class="vs-top">
+        <button class="back" data-go="home">◀ MENÚ</button>
+        <h2>PELEA RÁPIDA</h2>
+        <label class="dsel inline" for="qDiv"><span>División</span><select id="qDiv"></select></label>
+      </header>
+      <div class="vs-stage">
+        <canvas class="vs-flag l" id="vfP" width="48" height="32" aria-hidden="true"></canvas>
+        <canvas class="vs-flag r" id="vfR" width="48" height="32" aria-hidden="true"></canvas>
+        <canvas class="vs-fig l" id="vsP" width="110" height="128" aria-label="Tu peleador"></canvas>
+        <canvas class="vs-fig r" id="vsR" width="110" height="128" aria-label="Rival"></canvas>
+        <div class="vs-panel">
+          <div class="vs-tabs">
+            <button class="tabk" id="tabPrev" aria-label="Pestaña anterior"><span class="g-l1">L1</span></button>
+            <div class="vs-tabname"><b id="tabName">INFORMACIÓN GRAL</b><span class="dots"><i class="on"></i><i></i></span></div>
+            <button class="tabk" id="tabNext" aria-label="Pestaña siguiente"><span class="g-r1">R1</span></button>
+          </div>
+          <div class="vs-body" id="vsInfo">
+            <div class="vs-col" id="vsInfoP"></div>
+            <div class="vs-col r" id="vsInfoR"></div>
+          </div>
+          <div class="vs-body" id="vsStats" hidden><div id="tape"></div></div>
+        </div>
+        <div class="vs-names">
+          <div class="vn l">
+            <button class="ar" id="pPrev" aria-label="Peleador anterior">◀</button>
+            <div class="vn-txt"><span class="fn" id="pFirst"></span><b class="ln" id="pName"></b><span class="rec"><span id="pRec"></span><canvas id="pFlag" width="24" height="16"></canvas></span><span class="nick" id="pNick"></span></div>
+            <button class="ar" id="pNext" aria-label="Peleador siguiente">▶</button>
+          </div>
+          <div class="vsmark">VS</div>
+          <div class="vn r">
+            <button class="ar" id="rPrev" aria-label="Rival anterior">◀</button>
+            <div class="vn-txt"><span class="fn" id="rFirst"></span><b class="ln" id="rName"></b><span class="rec"><canvas id="rFlag" width="24" height="16"></canvas><span id="rRec"></span></span><span class="nick" id="rNick"></span></div>
+            <button class="ar" id="rNext" aria-label="Rival siguiente">▶</button>
+          </div>
+        </div>
+      </div>
+      <footer class="vs-foot">
+        <span class="hint"><span class="kb"><kbd>←</kbd><kbd>→</kbd></span><span class="pd"><i class="gl dp">✚</i>◀▶</span> Tu peleador</span>
+        <span class="hint"><span class="kb"><kbd>↑</kbd><kbd>↓</kbd></span><span class="pd"><i class="gl dp">✚</i>▲▼</span> Rival</span>
+        <span class="hint"><span class="kb"><kbd>Q</kbd><kbd>E</kbd></span><span class="pd"><i class="gl sh">L1</i><i class="gl sh">R1</i></span> Info / estadísticas</span>
+        <span class="hint"><span class="kb"><kbd>Esc</kbd></span><span class="pd"><i class="gl o">○</i></span> Atrás</span>
+        <button class="go" id="go"><span class="kb"><kbd>Enter</kbd></span><span class="pd"><i class="gl x">✕</i></span> PELEAR · 3 ROUNDS</button>
+      </footer>
+    </div>
+    <div class="wrap">
+      <section class="gen" aria-label="Generador de peleadores">
+        <div class="row2"><h2 class="gh">PELEADORES AL AZAR</h2><button class="alt" id="regen">GENERAR OTROS 6</button></div>
+        <div class="ggrid" id="ggrid"></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ============ CREAR PELEADOR ============ -->
+  <section id="create" class="scr" hidden aria-label="Crear peleador">
+    <div class="wrap">
+      <header class="sh"><button class="back" data-go="home">◀ MENÚ</button><h2>CREAR PELEADOR</h2><button class="alt sm" id="cNew">NUEVO</button></header>
+      <div class="cgrid">
+        <div class="cprev">
+          <canvas id="cPrev" width="96" height="112"></canvas>
+          <div class="nm" id="cpName"></div>
+          <div class="meta" id="cpMeta"></div>
+          <button class="alt" id="cRand">LOOK AL AZAR</button>
+        </div>
+        <div class="cform">
+          <fieldset>
+            <legend>DATOS</legend>
+            <div class="f2">
+              <div class="field"><label for="cFirst">Nombre</label><input id="cFirst" maxlength="16" autocomplete="off"></div>
+              <div class="field"><label for="cLast">Apellido</label><input id="cLast" maxlength="16" autocomplete="off"></div>
+            </div>
+            <div class="f2">
+              <div class="field"><label for="cNick">Apodo (opcional)</label><input id="cNick" maxlength="18" autocomplete="off"></div>
+              <div class="field"><label for="cFlag">País</label><select id="cFlag"></select></div>
+            </div>
+            <div class="field"><label for="cDiv">División</label><select id="cDiv"></select></div>
+            <div class="field"><label for="cStyle">Estilo de pelea</label><select id="cStyle"></select><small class="note">Cambiar el estilo reparte los puntos de nuevo.</small></div>
+          </fieldset>
+          <fieldset>
+            <legend>APARIENCIA</legend>
+            <div id="cLook"></div>
+          </fieldset>
+          <fieldset>
+            <legend>ATRIBUTOS · <span id="cPts">0</span> PUNTOS LIBRES</legend>
+            <div id="cStats"></div>
+          </fieldset>
+          <button class="go" id="cSave">GUARDAR PELEADOR</button>
+          <div class="msg" id="cMsg" aria-live="polite"></div>
+        </div>
+      </div>
+      <h3 class="sub2">TUS PELEADORES</h3>
+      <div class="flist" id="cList"></div>
+    </div>
+  </section>
+
+  <!-- ============ MODO TORNEO ============ -->
+  <section id="tourney" class="scr" hidden aria-label="Modo torneo">
+    <div class="wrap">
+      <header class="sh"><button class="back" data-go="home">◀ MENÚ</button><h2>MODO TORNEO</h2></header>
+      <div id="tBody"></div>
+    </div>
+  </section>
+
+  <!-- ============ MODO CARRERA ============ -->
+  <section id="career" class="scr" hidden aria-label="Modo carrera">
+    <div class="wrap">
+      <header class="sh"><button class="back" data-go="home">◀ MENÚ</button><h2>MODO CARRERA</h2></header>
+      <div id="kBody"></div>
+    </div>
+  </section>
+
+  <!-- ============ PELEA ============ -->
+  <section id="fight" hidden aria-label="Pelea">
+    <div id="stage"><div class="arena" id="arena">
+      <canvas id="cv" width="192" height="144"></canvas>
+      <div class="ftl" id="ftl" aria-hidden="true"></div>
+      <div class="ohud">
+        <div class="hb p">
+          <div class="oname"><i></i><span id="hpN"></span></div>
+          <div class="ores"><i id="stP"></i><span>RESISTENCIA</span></div>
+          <div class="mini"><span>CABEZA</span><b><i class="hd" id="hdP"></i></b></div>
+          <div class="mini"><span>PIERNAS</span><b><i class="lg" id="lgP"></i></b></div>
+          <div class="mini"><span>BLOQUEO</span><b><i class="bk" id="bkP"></i></b></div>
+        </div>
+        <div class="oclock"><div class="rseg" id="rseg"></div><b id="clk">1:30</b><small id="rnd">ROUND 1</small></div>
+        <div class="hb r">
+          <div class="oname"><i></i><span id="hrN"></span></div>
+          <div class="ores"><i id="stR"></i><span>RESISTENCIA</span></div>
+          <div class="mini"><span>CABEZA</span><b><i class="hd" id="hdR"></i></b></div>
+          <div class="mini"><span>PIERNAS</span><b><i class="lg" id="lgR"></i></b></div>
+          <div class="mini"><span>BLOQUEO</span><b><i class="bk" id="bkR"></i></b></div>
+        </div>
+      </div>
+      <div class="sidectl" id="sideCtl" aria-label="Controles básicos"></div>
+      <div class="ctltip" id="ctlTip" aria-live="polite"></div>
+    </div></div>
+    <div id="tickrow"><div id="tick" aria-live="polite"></div><button id="pz" aria-label="Pausa y controles">II PAUSA</button></div>
+
+    <div class="pad" id="padStand">
+      <button class="b st" data-k="jab">JAB<small>Q</small></button>
+      <button class="b st" data-k="cross">RECTO<small>W</small></button>
+      <button class="b st" data-k="hook">CROSS IZQ<small>E</small></button>
+      <button class="b st" data-k="hookR">CROSS DER<small>R</small></button>
+      <button class="b kk" data-k="low">LOW KICK<small>A</small></button>
+      <button class="b kk" data-k="high">HIGH KICK<small>S</small></button>
+      <button class="b st" data-k="upper">UPPER<small>F</small></button>
+      <button class="b td" data-k="td">DERRIBO<small>D</small></button>
+      <button class="b mv" data-hold="left" aria-label="Caminar a la izquierda">◀<small>caminar</small></button>
+      <button class="b mv" data-hold="down" aria-label="Agacharse">▼<small>agacharse</small></button>
+      <button class="b df" data-hold="block">CUBRIRSE<small>espacio</small></button>
+      <button class="b mv" data-hold="right" aria-label="Caminar a la derecha">▶<small>caminar</small></button>
+    </div>
+    <div class="pad g3" id="padTop" hidden>
+      <button class="b st big" data-k="gnp">GOLPEAR<small>Q</small></button>
+      <button class="b kk big" data-k="sub">SUMISIÓN<small>W</small></button>
+      <button class="b df big" data-k="up">PARARSE<small>E</small></button>
+    </div>
+    <div class="pad g3" id="padBot" hidden>
+      <button class="b df big" data-k="def">DEFENDER<small>Q</small></button>
+      <button class="b td big" data-k="esc">ESCAPAR<small>W</small></button>
+      <button class="b kk big" data-k="sub">SUMISIÓN<small>E</small></button>
+    </div>
+    <!-- Mando táctil (celular en horizontal) -->
+    <div class="vpad" id="vpad" aria-hidden="true">
+      <div class="vstick" id="vstick"><div class="vknob" id="vknob"></div><span class="vlab">MOVERSE</span></div>
+      <div class="vsh vl">
+        <button class="vb vs" data-vhold="l2"><b>L2</b><small>UPPER</small></button>
+        <button class="vb vs" data-vhold="l1"><b>L1</b><small>CROSS</small></button>
+      </div>
+      <div class="vsh vr">
+        <button class="vb vs" data-vhold="r1"><b>R1</b><small>CUBRIRSE</small></button>
+        <button class="vb vs" data-vb="r2"><b>R2</b><small>DERRIBO</small></button>
+      </div>
+      <div class="vface">
+        <button class="vb vf t" data-vb="tr"><b>△</b><small>RECTO</small></button>
+        <button class="vb vf s" data-vb="sq"><b>□</b><small>JAB</small></button>
+        <button class="vb vf o" data-vb="ci"><b>○</b><small>LOW KICK</small></button>
+        <button class="vb vf x" data-vb="x"><b>✕</b><small>HIGH KICK</small></button>
+      </div>
+      <button class="vb vpause" id="vpause" aria-label="Pausa"><b>II</b></button>
+    </div>
+    <div class="rothint" id="rotHint" hidden>
+      <div class="rotph"></div>
+      <h3>GIRÁ EL CELULAR</h3>
+      <p>La pelea se juega en horizontal, con el mando en pantalla.</p>
+      <button class="alt" id="vertOk">JUGAR EN VERTICAL</button>
+    </div>
+  </section>
+</div>
+
+<div id="ov" hidden><div class="card" id="ovc"></div></div>
+
+<!-- El orden importa: cada archivo usa cosas de los anteriores -->
+<script src="js/config.js"></script>
+<script src="data/peleadores.js"></script>
+<script src="data/sprites.js"></script>
+<!-- Peleadores reales: solo en tu copia local (borrá estas dos líneas para volver a los inventados) -->
+<script src="data/peleadores-reales.js"></script>
+<script src="data/sprites-reales.js"></script>
+<script src="js/dibujo.js"></script>
+<script src="js/sonido.js"></script>
+<script src="js/juego.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/navegacion.js"></script>
+<script src="js/crear.js"></script>
+<script src="js/torneo.js"></script>
+<script src="js/carrera.js"></script>
+<script src="js/fichas.js"></script>
+<script src="js/mando.js"></script>
+<script src="js/tactil.js"></script>
+<script src="js/nube-config.js"></script>
+<script src="js/nube.js"></script>
+<script src="js/inicio.js"></script>
+</body>
+</html>
