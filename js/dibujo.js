@@ -106,11 +106,20 @@ function spriteFC(f,o){
  let list=F[key],idx=0,wind=false;
  if((key==='pwind'||key==='kwind')&&S.plantilla&&F[o.act]){list=F[o.act];wind=true;}   // preparación: primer cuadro del golpe
  else if(!list){key='guard';list=F.guard;}
- if(wind)idx=0;
- else if(o.walking&&key==='guard'){list=F.walk||F.guard;idx=Math.floor(o.walk/2.4)%list.length;}
- else if(key==='guard')idx=Math.floor(t*2.2)%list.length;
+ const vaiven=n=>n<3?[...Array(n).keys()]:[...Array(n).keys(),...Array.from({length:n-2},(_,i)=>n-2-i)];   // 0,1,2,3,2,1
+ const golpe=S.plantilla&&list&&list.length>1&&!['guard','walk','win','ko','raise','block','crouch','hurt'].includes(key);
+ const hi=list&&list.length>=4?2:1;   // cuadro en el que el golpe pega
+ if(wind)idx=Math.min(hi-1,Math.floor((o.prog||0)*hi));
+ else if(golpe&&o.ph==='rec'){
+  // pega, se sostiene un instante y vuelve pasando por los cuadros de vuelta
+  const p=o.prog||0,ret=list.length-hi-1;
+  if(p<.38)idx=hi;
+  else{const q=(p-.38)/.62;if(ret>0&&q<.72)idx=hi+1+Math.min(ret-1,Math.floor(q/.72*ret));else{list=F.guard;idx=0;}}
+ }
+ else if(o.walking&&key==='guard'){list=F.walk||F.guard;const sq=vaiven(list.length);idx=sq[Math.floor(o.walk/1.1)%sq.length];}
+ else if(key==='guard'){const sq=vaiven(list.length);idx=sq[Math.floor((t+(o.off||0))*7)%sq.length];}
  else if(key==='win'||key==='ko')idx=Math.min(list.length-1,Math.floor(t*2)%list.length);
- else if(S.plantilla&&list.length>1)idx=1;
+ else if(golpe)idx=hi;
  const[sx,sy,w,h,ax]=list[idx];
  fcx.clearRect(0,0,SPW,SPH);fcx.imageSmoothingEnabled=false;
  if(!S.img.complete||!S.img.naturalWidth)return;

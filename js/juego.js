@@ -39,12 +39,12 @@ function doP(k){
 }
 function startAtk(f,k){
  const m=MOVES[k],isP=f===G.p;
- f.state='wind';f.act=k;f.t=(isP?m.pw:m.rw)*spdMul(f)*(f.st<10?1.4:1);f.st=Math.max(0,f.st-m.cost*(isP?1:.7));
+ f.state='wind';f.act=k;f.t=f.tw=(isP?m.pw:m.rw)*spdMul(f)*(f.st<10?1.4:1);f.st=Math.max(0,f.st-m.cost*(isP?1:.7));
  f.kv+=f.face*m.lunge;f.vx=0;f.mvT=0;
  if(isP)G.r.react=1;
 }
 function setCounter(b){G.counterFor=b;G.counterT=.8;if(b===G.p){txtAt(G.r,'¡CONTRA!','#ffd23f');ticker(`${G.r.d.last} falla y queda de contra.`);}}
-function whiff(a,b,msg){sfx('whoosh');a.state='missed';a.t=a===G.p?.3:.5;txtAt(b,msg,'#8b93a5');setCounter(b);}
+function whiff(a,b,msg){sfx('whoosh');a.state='missed';a.t=a.t0=a===G.p?.3:.5;txtAt(b,msg,'#8b93a5');setCounter(b);}
 function land(a,b,m,k,mult,open,intr){
  const isP=a===G.p;
  let dmg=DMG*m.dmg*(.5+a.s.pow/100*.75)*(.55+.45*a.st/100)*(1.3-b.s.chin/100*.55)*rand(.85,1.15)*mult;
@@ -52,6 +52,7 @@ function land(a,b,m,k,mult,open,intr){
  b.hp=Math.max(0,b.hp-dmg);a.stats.land++;a.stats.dmg+=dmg;a.stats[m.tgt]=(a.stats[m.tgt]||0)+1;
  if(k==='low'){b.legs=Math.min(60,b.legs+7);b.st=Math.max(0,b.st-5);}
  b.hit=.16;b.kv+=a.face*(35+dmg*7);
+ G.stop=Math.max(G.stop||0,dmg>=7?.12:.065);G.shake=Math.max(G.shake,dmg>=7?.2:.08);   // golpe que entra: se congela un instante (sensación de impacto)
  sfx(dmg>=7?'big':'hit');
  const hy=k==='low'?GY-15:(b.state==='crouch'?GY-58:GY-76);
  spark(b.x-a.face*8,hy,dmg>=7?'#ffd23f':isP?'#ffffff':'#ff8a7a',dmg>=7?12:7);
@@ -308,6 +309,7 @@ function update(dt){
  if(G.phase==='intro'){G.introT-=dt;if(G.introT<=0)G.phase='fight';return;}
  if(G.phase==='ko'){G.koT-=dt;if(G.koT<=0){G.phase='end';showResult();}return;}
  if(G.phase!=='fight')return;
+ if(G.stop>0){G.stop-=dt;return;}
  G.time-=dt;if(G.time<=0){G.time=0;endRound();return;}
  regen(dt);
  if(G.mode==='stand')updStand(dt);else updGround(dt);
@@ -315,10 +317,12 @@ function update(dt){
 function poseOf(f){
  const o={act:f.act,hit:f.hit>0,bob:Math.sin(G.t*5+(f===G.p?0:1.7)),walk:f.walk};let pose='guard';
  if((G.phase==='ko'||G.phase==='end')&&G.res&&f.state!=='ko'&&(G.res.w==='p')===(f===G.p)){o.pose='win';return o;}
+ const S=f.d.sprite&&spriteOf(f.d),anim=!!(S&&S.plantilla);   // hojas con todos los cuadros: se anima el golpe entero
+ o.off=f===G.r?.37:0;
  switch(f.state){
-  case'wind':{const m=MOVES[f.act];if(f===G.r){o.flash=Math.floor(G.t*16)%2===0;if(m.td)o.flashCol='#5aa2ff';}pose=m.td?'shoot':m.leg?'kwind':'pwind';break;}
-  case'rec':if(f.act&&f.t0-f.t<.16&&!MOVES[f.act].td)pose=f.act;break;
-  case'missed':if(f.act){pose=MOVES[f.act].td?'shoot':f.act;o.lean=3;}break;
+  case'wind':{const m=MOVES[f.act];o.prog=1-f.t/(f.tw||1);if(f===G.r){o.flash=Math.floor(G.t*16)%2===0;if(m.td)o.flashCol='#5aa2ff';}pose=m.td?'shoot':m.leg?'kwind':'pwind';break;}
+  case'rec':if(f.act&&!MOVES[f.act].td&&(anim||f.t0-f.t<.16)){pose=f.act;o.ph='rec';o.prog=1-f.t/(f.t0||1);}break;
+  case'missed':if(f.act){pose=MOVES[f.act].td?'shoot':f.act;o.lean=3;o.ph='rec';o.prog=1-f.t/(f.t0||1);}break;
   case'block':pose='block';break;
   case'crouch':pose='crouch';break;
   case'hurt':pose='hurt';o.hurt=1;break;
