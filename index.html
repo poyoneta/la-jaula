@@ -19,6 +19,17 @@
 <link rel="stylesheet" href="css/menu-imagenes.css">
 </head>
 <body>
+<!-- Pantalla de carga: si algo falla al arrancar, muestra el error en vez de quedar en negro -->
+<div id="boot" style="position:fixed;inset:0;z-index:99;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:Arial,sans-serif;text-align:center;padding:20px">
+  <div style="font-weight:800;font-size:34px;letter-spacing:.02em">UFC <span style="font-size:18px;letter-spacing:.1em;border-left:3px solid #d20a0a;padding-left:8px">POCKET EDITION</span></div>
+  <div id="bootMsg" style="color:#aaa;font-size:15px">Cargando…</div>
+</div>
+<script>
+ (function(){var n=0;function show(t){var m=document.getElementById('bootMsg'),b=document.getElementById('boot');if(!m||b.style.display==='none'||n++>3)return;m.style.color='#ff8a7a';m.innerHTML+='<br><small>Error: '+String(t).replace(/</g,'&lt;')+'</small><br><button onclick="location.reload()" style="margin-top:10px;padding:10px 18px;background:#d20a0a;color:#fff;border:0;font-weight:700">REINTENTAR</button>';}
+ window.addEventListener('error',function(e){var s=e.target&&(e.target.src||e.target.href)||'';if(/fonts\.g|jsdelivr/.test(s))return;show((e.message||'archivo que no cargó: '+((e.target&&(e.target.src||e.target.href))||'?')));},true);
+ window.addEventListener('unhandledrejection',function(e){show(e.reason&&e.reason.message||e.reason);});
+ setTimeout(function(){var b=document.getElementById('boot');if(b&&b.style.display!=='none'&&!n){document.getElementById('bootMsg').innerHTML='Tarda más de lo normal…<br><button onclick="location.reload()" style="margin-top:10px;padding:10px 18px;background:#d20a0a;color:#fff;border:0;font-weight:700">REINTENTAR</button>';}},12000);})();
+</script>
 <div id="app">
 
   <!-- ============ MENÚ PRINCIPAL ============ -->

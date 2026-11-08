@@ -10,6 +10,7 @@ function menuLoop(ms){
   else if(curScreen==='career')drawCareerPrev(t);
  }
  requestAnimationFrame(menuLoop);
+{const b=document.getElementById('boot');if(b)b.style.display='none';}   // terminó de cargar
 }
 // Cuando termina de cargar una hoja de sprites, redibuja los retratos de la pantalla actual
 function onSpriteLoad(){if(G)return;if(curScreen==='quick')renderMenu();else if(curScreen==='create'){renderCList();drawHeadBtns();}else if(curScreen==='tourney')renderTourney();else if(curScreen==='career')renderCareer();}

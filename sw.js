@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='ufcpe-v9';
+const VERSION='ufcpe-v10';
 const ARCHIVOS=[
  "./",
  "index.html",
@@ -58,15 +58,24 @@ const ARCHIVOS=[
  "assets/sprites/volkanovski.png",
  "assets/sprites/zalal.png"
 ];
-self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(ARCHIVOS)).then(()=>self.skipWaiting()));});
+// Guardar los archivos de a uno: si alguno falta en el servidor, el resto se guarda igual
+self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>Promise.allSettled(ARCHIVOS.map(f=>c.add(f)))).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+// Una respuesta que vino de una redirección no se puede usar para abrir la página: se copia limpia
+const limpia=res=>res.redirected?res.blob().then(b=>new Response(b,{status:res.status,statusText:res.statusText,headers:res.headers})):res;
+const guardar=(r,res)=>{if(res&&res.ok&&res.type==='basic'){const cp=res.clone();caches.open(VERSION).then(c=>c.put(r,cp)).catch(()=>{});}return res;};
 self.addEventListener('fetch',e=>{
  const r=e.request;if(r.method!=='GET')return;
  const u=new URL(r.url);
- // Del mismo sitio: primero internet (para tener siempre lo último), si no hay, lo guardado
+ // Abrir la app: primero internet, si no hay, la copia guardada
+ if(r.mode==='navigate'){
+  e.respondWith(fetch(r).then(limpia).then(res=>guardar(r,res))
+   .catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('./')).then(m=>m||caches.match('index.html')).then(m=>m||Response.error())));
+  return;
+ }
+ // Archivos del juego: primero internet (lo último), si no hay, lo guardado
  if(u.origin===location.origin){
-  e.respondWith(fetch(r).then(res=>{if(res.ok){const cp=res.clone();caches.open(VERSION).then(c=>c.put(r,cp));}return res;})
-   .catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('index.html'))));
+  e.respondWith(fetch(r).then(res=>guardar(r,res)).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||Response.error())));
   return;
  }
  // Fuentes y librería de Supabase: lo guardado primero
