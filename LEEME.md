@@ -223,3 +223,11 @@ En el celular acostado: stick a la izquierda con **CUBRIRSE** y **ESQUIVAR** arr
 A la derecha, un botón por golpe con su dibujo: JAB, RECTO, LOW KICK y HIGH KICK grandes; CROSS IZQ., UPPERCUT,
 CROSS DER. y DERRIBO más chicos. En el piso, los tres botones grandes cambian de dibujo (golpear, sumisión, pararse…).
 Los dibujos están en `js/iconos.js`.
+
+## Música y pantallas de carga
+
+- **Música de los menús** (`js/musica.js`): suena en los menús y se corta en la pelea. Respeta la casilla "Sonido".
+  Si ponés un archivo `assets/musica/menu.mp3`, suena ese en loop en lugar del tema del juego.
+- **Pantallas de carga**: al abrir el juego sale al azar la portada o una de `assets/carga/`;
+  antes de cada pelea sale una de `assets/carga/` con un consejo. Para agregar más, poné la imagen
+  en esa carpeta y sumala a la lista `CARGAS` en `js/carga.js`.
