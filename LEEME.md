@@ -1,4 +1,4 @@
-# UFC Pocket Edition
+# Pocket MMA
 
 Juego de peleas de MMA en pixel art, vista de costado. Corre en el navegador (compu y celular), sin instalar nada.
 
@@ -195,3 +195,10 @@ Los peleadores inventados, los generados al azar y los que creás se arman con:
 En **Crear peleador** elegís peinado (o pelado), color de pelo, color de piel y color de short. Los guantes quedan negros.
 Para que los colores cambien, abrí el juego con **Live Server** (o desde Render): abriendo
 `index.html` con doble clic el navegador no deja tocar los pixeles y salen con los colores del dibujo.
+
+## Imagen del juego y menú
+
+- `assets/portada.png`: imagen del juego (peleador genérico con dos cinturones y el escudo de Pocket MMA).
+  Se usa en la pantalla de carga y, recortada, en los íconos de `assets/icons/`.
+- `assets/menu/`: escenas del menú hechas con los peleadores genéricos (cuerpo base + peinados).
+- Los scripts que generaron estas imágenes no van en el juego: si querés otras, pedímelas.

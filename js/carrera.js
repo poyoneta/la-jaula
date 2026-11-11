@@ -43,7 +43,7 @@ const RETOS=[
  ['dec','Ganá yendo a la decisión',r=>r.w==='p'&&/Decisión/.test(r.method)],
  ['fin','Terminá la pelea antes del final',r=>r.w==='p'&&!/Decisión/.test(r.method)]
 ];
-const CUENTAS=[['UFC Pocket','@ufcpocket','org'],['El Profe MMA','@elprofemma','pro'],['Noticias del octágono','@octagononews','pro'],['Fan del barrio','@fan_de_la_jaula','fan']];
+const CUENTAS=[['Pocket MMA','@pocketmma','org'],['El Profe MMA','@elprofemma','pro'],['Noticias del octágono','@octagononews','pro'],['Fan del barrio','@fan_de_la_jaula','fan']];
 
 function applyGain(s,g){const out=[];for(const k in g){const add=s[k]>=90?1:g[k],nv=Math.min(99,s[k]+add);if(nv>s[k])out.push(`${statName(k)} +${nv-s[k]}`);s[k]=nv;}return out;}
 function genOpp(rank){
@@ -275,7 +275,7 @@ function tileContrato(){
 }
 function tileRedes(n){
  const r=C.camp&&C.camp.reto;
- const items=C.feed.slice(0,n).map(p=>`<div class="cr6-post ${p.tipo}"><i class="cr6-pav ${p.tipo}">${p.tipo==='org'?'UFC':p.quien.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</i><div><b>${esc(p.quien)}</b> <small>${esc(p.arroba)}</small><p>${esc(p.texto)}</p>
+ const items=C.feed.slice(0,n).map(p=>`<div class="cr6-post ${p.tipo}"><i class="cr6-pav ${p.tipo}">${p.tipo==='org'?'PMA':p.quien.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</i><div><b>${esc(p.quien)}</b> <small>${esc(p.arroba)}</small><p>${esc(p.texto)}</p>
   ${p.reto&&r&&r.acc==null?`<div class="cr6-reto"><button data-reto="1">Aceptar reto</button><button data-reto="0">Rechazar</button></div>`:p.reto&&r?`<em>${r.acc?'Reto aceptado':'Rechazaste el reto'}</em>`:''}</div></div>`).join('');
  return`<section class="cr6-tile cr6-feed"><div class="cr6-feedl">${items||'<p class="cr6-empty">Sin publicaciones.</p>'}</div><h3>REDES SOCIALES</h3></section>`;
 }

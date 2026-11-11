@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='ufcpe-v10';
+const VERSION='pmma-v15';
 const ARCHIVOS=[
  "./",
  "index.html",
@@ -32,6 +32,7 @@ const ARCHIVOS=[
  "assets/icons/icon-512.png",
  "assets/icons/maskable-512.png",
  "assets/menu/carrera.png",
+ "assets/portada.png",
  "assets/menu/crear.png",
  "assets/menu/pelea.png",
  "assets/menu/torneo.png",
@@ -68,6 +69,8 @@ self.addEventListener('fetch',e=>{
  const r=e.request;if(r.method!=='GET')return;
  const u=new URL(r.url);
  // Abrir la app: primero internet, si no hay, la copia guardada
+ // Con internet, abrir la app lo maneja el navegador solo (igual que tus otras apps); sin internet, la copia guardada
+ if(r.mode==='navigate'&&self.navigator.onLine)return;
  if(r.mode==='navigate'){
   e.respondWith(fetch(r).then(limpia).then(res=>guardar(r,res))
    .catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||caches.match('./')).then(m=>m||caches.match('index.html')).then(m=>m||Response.error())));

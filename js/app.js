@@ -26,7 +26,7 @@ function forzarHorizontal(){
  const lock=()=>{try{const q=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(q&&q.catch)q.catch(()=>{});}catch(e){}};
  try{
   const de=document.documentElement;
-  if(!document.fullscreenElement&&de.requestFullscreen&&!esApp()){const p=de.requestFullscreen({navigationUI:'hide'});if(p&&p.then)p.then(lock,lock);else lock();}
+  if(!document.fullscreenElement&&de.requestFullscreen){const p=de.requestFullscreen({navigationUI:'hide'});if(p&&p.then)p.then(lock,lock);else lock();}
   else lock();
  }catch(e){lock();}
 }

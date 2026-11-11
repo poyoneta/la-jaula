@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>UFC Pocket Edition</title>
+<title>Pocket MMA</title>
 <meta name="theme-color" content="#d20a0a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icons/icon-192.png">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="UFC Pocket">
+<meta name="apple-mobile-web-app-title" content="Pocket MMA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap">
 <link rel="stylesheet" href="css/estilos.css">
@@ -20,9 +20,9 @@
 </head>
 <body>
 <!-- Pantalla de carga: si algo falla al arrancar, muestra el error en vez de quedar en negro -->
-<div id="boot" style="position:fixed;inset:0;z-index:99;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-family:Arial,sans-serif;text-align:center;padding:20px">
-  <div style="font-weight:800;font-size:34px;letter-spacing:.02em">UFC <span style="font-size:18px;letter-spacing:.1em;border-left:3px solid #d20a0a;padding-left:8px">POCKET EDITION</span></div>
-  <div id="bootMsg" style="color:#aaa;font-size:15px">Cargando…</div>
+<div id="boot" style="position:fixed;inset:0;z-index:99;background:#111 url(assets/portada.png) center/contain no-repeat;image-rendering:pixelated;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;font-family:Arial,sans-serif;text-align:center;padding:20px 20px 28px">
+  <div style="font-weight:800;font-size:34px;letter-spacing:.02em;text-shadow:0 2px 8px #000">POCKET <span style="color:#d20a0a">MMA</span></div>
+  <div id="bootMsg" style="color:#ddd;font-size:15px;text-shadow:0 1px 4px #000">Cargando…</div>
 </div>
 <script>
  (function(){var n=0;function show(t){var m=document.getElementById('bootMsg'),b=document.getElementById('boot');if(!m||b.style.display==='none'||n++>3)return;m.style.color='#ff8a7a';m.innerHTML+='<br><small>Error: '+String(t).replace(/</g,'&lt;')+'</small><br><button onclick="location.reload()" style="margin-top:10px;padding:10px 18px;background:#d20a0a;color:#fff;border:0;font-weight:700">REINTENTAR</button>';}
@@ -36,7 +36,7 @@
   <section id="home" class="scr home" aria-label="Menú principal">
     <div class="wrap">
       <header class="topbar">
-        <div class="logo"><b>UFC</b><span>POCKET EDITION</span></div>
+        <div class="logo"><b>POCKET</b><span>MMA</span></div>
         <div class="tb-r">
           <span class="chip" id="hRec" hidden></span>
           <label class="chk"><input type="checkbox" id="snd" checked> Sonido</label>
@@ -266,7 +266,7 @@
 <div class="rothint" id="rotHint" hidden>
   <div class="rotph"></div>
   <h3>GIRÁ EL CELULAR</h3>
-  <p>UFC Pocket Edition se juega en horizontal.</p>
+  <p>Pocket MMA se juega en horizontal.</p>
 </div>
 
 <!-- El orden importa: cada archivo usa cosas de los anteriores -->
