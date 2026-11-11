@@ -14,9 +14,9 @@
 <meta name="apple-mobile-web-app-title" content="Pocket MMA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&display=swap">
-<link rel="stylesheet" href="css/estilos.css">
+<link rel="stylesheet" href="css/estilos.css?v=18">
 <!-- Imágenes del menú recortadas de tu captura (solo copia local) -->
-<link rel="stylesheet" href="css/menu-imagenes.css">
+<link rel="stylesheet" href="css/menu-imagenes.css?v=18">
 </head>
 <body>
 <!-- Pantalla de carga: si algo falla al arrancar, muestra el error en vez de quedar en negro -->
@@ -26,7 +26,7 @@
 </div>
 <script>
  (function(){var n=0;function show(t){var m=document.getElementById('bootMsg'),b=document.getElementById('boot');if(!m||b.style.display==='none'||n++>3)return;m.style.color='#ff8a7a';m.innerHTML+='<br><small>Error: '+String(t).replace(/</g,'&lt;')+'</small><br><button onclick="location.reload()" style="margin-top:10px;padding:10px 18px;background:#d20a0a;color:#fff;border:0;font-weight:700">REINTENTAR</button>';}
- window.addEventListener('error',function(e){var s=e.target&&(e.target.src||e.target.href)||'';if(/fonts\.g|jsdelivr/.test(s))return;show((e.message||'archivo que no cargó: '+((e.target&&(e.target.src||e.target.href))||'?')));},true);
+ window.addEventListener('error',function(e){var s=e.target&&(e.target.src||e.target.href)||'';if(/fonts\.g|jsdelivr/.test(s))return;show((e.message?e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''):'archivo que no cargó: '+((e.target&&(e.target.src||e.target.href))||'?')));},true);
  window.addEventListener('unhandledrejection',function(e){show(e.reason&&e.reason.message||e.reason);});
  setTimeout(function(){var b=document.getElementById('boot');if(b&&b.style.display!=='none'&&!n){document.getElementById('bootMsg').innerHTML='Tarda más de lo normal…<br><button onclick="location.reload()" style="margin-top:10px;padding:10px 18px;background:#d20a0a;color:#fff;border:0;font-weight:700">REINTENTAR</button>';}},12000);})();
 </script>
@@ -270,26 +270,26 @@
 </div>
 
 <!-- El orden importa: cada archivo usa cosas de los anteriores -->
-<script src="js/config.js"></script>
-<script src="data/peleadores.js"></script>
-<script src="data/sprites.js"></script>
-<script src="data/cuerpo-base.js"></script>
-<script src="js/dibujo.js"></script>
-<script src="js/cuerpos.js"></script>
-<script src="js/sonido.js"></script>
-<script src="js/juego.js"></script>
-<script src="js/menu.js"></script>
-<script src="js/navegacion.js"></script>
-<script src="js/crear.js"></script>
-<script src="js/torneo.js"></script>
-<script src="js/carrera.js"></script>
-<script src="js/fichas.js"></script>
-<script src="js/mando.js"></script>
-<script src="js/iconos.js"></script>
-<script src="js/tactil.js"></script>
-<script src="js/nube-config.js"></script>
-<script src="js/nube.js"></script>
-<script src="js/app.js"></script>
-<script src="js/inicio.js"></script>
+<script src="js/config.js?v=18"></script>
+<script src="data/peleadores.js?v=18"></script>
+<script src="data/sprites.js?v=18"></script>
+<script src="data/cuerpo-base.js?v=18"></script>
+<script src="js/dibujo.js?v=18"></script>
+<script src="js/cuerpos.js?v=18"></script>
+<script src="js/sonido.js?v=18"></script>
+<script src="js/juego.js?v=18"></script>
+<script src="js/menu.js?v=18"></script>
+<script src="js/navegacion.js?v=18"></script>
+<script src="js/crear.js?v=18"></script>
+<script src="js/torneo.js?v=18"></script>
+<script src="js/carrera.js?v=18"></script>
+<script src="js/fichas.js?v=18"></script>
+<script src="js/mando.js?v=18"></script>
+<script src="js/iconos.js?v=18"></script>
+<script src="js/tactil.js?v=18"></script>
+<script src="js/nube-config.js?v=18"></script>
+<script src="js/nube.js?v=18"></script>
+<script src="js/app.js?v=18"></script>
+<script src="js/inicio.js?v=18"></script>
 </body>
 </html>

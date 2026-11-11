@@ -34,7 +34,7 @@ if(matchMedia('(pointer:coarse)').matches){
  document.addEventListener('pointerdown',function primer(){document.removeEventListener('pointerdown',primer,true);forzarHorizontal();},true);
 }
 
-// Service worker (solo funciona en https o en localhost, por ejemplo con Live Server o en Render)
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/claude|anthropic/.test(location.hostname)){
+// Service worker (solo en https o localhost: Live Server o Render). En la app de Android no hace falta: los archivos ya vienen adentro del APK.
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!/claude|anthropic|appassets\.androidplatform\.net/.test(location.hostname)){
  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(e=>console.warn('Service worker:',e)));
 }

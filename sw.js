@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='pmma-v16';
+const VERSION='pmma-v18';
 const ARCHIVOS=[
  "./",
  "index.html",
@@ -60,7 +60,7 @@ self.addEventListener('fetch',e=>{
  }
  // Archivos del juego: primero internet (lo último), si no hay, lo guardado
  if(u.origin===location.origin){
-  e.respondWith(fetch(r).then(res=>guardar(r,res)).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||Response.error())));
+  e.respondWith(fetch(r,{cache:'no-cache'}).then(res=>guardar(r,res)).catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||Response.error())));
   return;
  }
  // Fuentes y librería de Supabase: lo guardado primero

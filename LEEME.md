@@ -203,7 +203,7 @@ Para que los colores cambien, abrí el juego con **Live Server** (o desde Render
 
 ## Imagen del juego y menú
 
-- `assets/portada.png`: imagen del juego (peleador genérico con dos cinturones y el escudo de Pocket MMA).
+- `assets/portada.png`: imagen del juego (peleador con anteojos y dos cinturones "MMA").
   Se usa en la pantalla de carga y, recortada, en los íconos de `assets/icons/`.
 - `assets/menu/`: escenas del menú hechas con los peleadores genéricos (cuerpo base + peinados).
 - Los scripts que generaron estas imágenes no van en el juego: si querés otras, pedímelas.
