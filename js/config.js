@@ -5,7 +5,7 @@ let W=192;
 const H=144,ROUND_LEN=90,ROUNDS=3,DMG=.8;
 const rnd=Math.random,rand=(a,b)=>a+rnd()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pick=a=>a[Math.floor(rnd()*a.length)];
-function shade(hex,amt){const n=parseInt(hex.slice(1),16);const ch=[n>>16,n>>8&255,n&255].map(v=>clamp(Math.round(amt<0?v*(1+amt):v+(255-v)*amt),0,255));return'#'+((1<<24)|(ch[0]<<16)|(ch[1]<<8)|ch[2]).toString(16).slice(1);}
+function shade(hex,amt){hex=hex||"#2c2f37";const n=parseInt(hex.slice(1),16);const ch=[n>>16,n>>8&255,n&255].map(v=>clamp(Math.round(amt<0?v*(1+amt):v+(255-v)*amt),0,255));return'#'+((1<<24)|(ch[0]<<16)|(ch[1]<<8)|ch[2]).toString(16).slice(1);}
 const fmt=t=>{t=Math.max(0,Math.ceil(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
 
 

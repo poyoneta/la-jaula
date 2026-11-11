@@ -278,11 +278,11 @@ function showResult(){
 }
 // Tabla de controles: básicos y avanzados (se ve en la pausa y en "Cómo se pelea")
 function controlsHtml(){
- const row=([a,k,pd,t,n])=>`<tr><td>${a}${n?`<small>${n}</small>`:''}</td><td><kbd>${k}</kbd></td><td class="pdc">${pd?badge(pd):'—'}</td><td>${t}</td></tr>`;
- const basic=[['Jab','Q','□','JAB'],['Recto','W','△','RECTO'],['Cross izquierdo','E','L1+□','CROSS IZQ'],['Cross derecho','R','L1+△','CROSS DER'],['Low kick','A','○','LOW KICK','Le saca piernas y aire'],['High kick','S','✕','HIGH KICK','Puede noquear, pero si falla quedás expuesto']];
- const adv=[['Caminar','← →','','◀ ▶','Con mando: cruz o stick izquierdo'],['Agacharse','↓','','▼','Los golpes altos pasan por arriba'],['Cubrirse','Espacio','R1','CUBRIRSE','Gasta la barra BLOQUEO: si se vacía, te rompen la guardia'],
-  ['Uppercut','F','L2+□','UPPER','Castiga al que se agacha'],['Derribo','D','R2','DERRIBO','Mejor justo después de que el rival falle'],['Sprawl','Espacio','R1','CUBRIRSE','Mantenelo cuando el rival brilla en azul'],
-  ['Piso arriba','Q · W · E','','botones','Golpear · Sumisión · Pararse (mando: □ · △ · ○)'],['Piso abajo','Q · W · E','','botones','Defender · Escapar · Sumisión (mando: □ · △ · ○)'],['Pausa','Esc o P','Options','II PAUSA']];
+ const row=([a,k,pd,t,n])=>`<tr><td>${a}${n?`<small>${n}</small>`:''}</td><td><kbd>${k}</kbd></td><td class="pdc">${pd?badge(pd):'—'}</td><td>${t&&t[0]==='@'&&typeof ICO!=='undefined'?`<span class="ctico">${ICO[t.slice(1)]}</span>`:t}</td></tr>`;
+ const basic=[['Jab','Q','□','@jab'],['Recto','W','△','@cross'],['Cross izquierdo','E','L1+□','@hook'],['Cross derecho','R','L1+△','@hookR'],['Low kick','A','○','@low','Le saca piernas y aire'],['High kick','S','✕','@high','Puede noquear, pero si falla quedás expuesto']];
+ const adv=[['Caminar','← →','','◀ ▶','Con mando: cruz o stick izquierdo'],['Agacharse / esquivar','↓','','@duck','Los golpes altos pasan por arriba'],['Cubrirse','Espacio','R1','@block','Gasta la barra BLOQUEO: si se vacía, te rompen la guardia'],
+  ['Uppercut','F','L2+□','@upper','Castiga al que se agacha'],['Derribo','D','R2','@td','Mejor justo después de que el rival falle'],['Sprawl','Espacio','R1','@block','Mantenelo cuando el rival brilla en azul'],
+  ['Piso arriba','Q · W · E','','botones','Golpear · Sumisión · Pararse (mando: □ · △ · ○; celular: los botones grandes cambian de dibujo)'],['Piso abajo','Q · W · E','','botones','Defender · Escapar · Sumisión (mando: □ · △ · ○)'],['Pausa','Esc o P','Options','@pausa']];
  const head='<thead><tr><th>Acción</th><th>Teclado</th><th>Mando</th><th>Celular</th></tr></thead>';
  return`<div class="ctl"><h4>CON MANDO</h4>${mandoSVG()}<h4>CONTROLES BÁSICOS</h4><table class="ctab">${head}<tbody>${basic.map(row).join('')}</tbody></table>
   <h4>CONTROLES AVANZADOS</h4><table class="ctab">${head}<tbody>${adv.map(row).join('')}</tbody></table></div>`;

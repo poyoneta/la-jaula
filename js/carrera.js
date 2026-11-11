@@ -43,11 +43,28 @@ const RETOS=[
  ['dec','Ganá yendo a la decisión',r=>r.w==='p'&&/Decisión/.test(r.method)],
  ['fin','Terminá la pelea antes del final',r=>r.w==='p'&&!/Decisión/.test(r.method)]
 ];
+// Gimnasios (mejoran los puntos que da entrenar y bajan el riesgo de lesión)
+const GYMS=[['Gimnasio del barrio',0,1],['Academia regional',150000,1.25],['Centro de alto rendimiento',600000,1.5],['Equipo de élite',2000000,1.8]];
+// Patrocinadores (marcas inventadas): se desbloquean con fans; pagan por pelea y un bono si cumplís la condición
+const SPONS=[
+ {id:'voltio',n:'Voltio · bebida energética',fans:4000,pago:15000,cond:'ganar',bono:20000},
+ {id:'kraken',n:'Kraken · ropa deportiva',fans:20000,pago:40000,cond:'fin',bono:60000},
+ {id:'titan',n:'Titán · suplementos',fans:80000,pago:90000,cond:'ganar',bono:90000},
+ {id:'cronos',n:'Cronos · relojes',fans:250000,pago:200000,cond:'titulo',bono:300000},
+ {id:'vertice',n:'Vértice · autos',fans:1000000,pago:450000,cond:'fin',bono:500000}];
+const CONDS={ganar:'si ganás',fin:'si ganás por KO o sumisión',titulo:'en peleas por el título'};
+const edadDe=()=>Math.floor((C.ageBase||24)+(C.date-(C.start||C.date))/(365*864e5));
+const regional=()=>C.liga==='regional';
+const REG_WINS=3;   // victorias en la liga regional para conseguir contrato
+// Legado: puntaje de toda la carrera
+function legado(){const fins=C.hist.filter(h=>h.res==='p'&&!/Decisión/.test(h.method)).length;
+ const p=Math.round(C.rec.w*10+fins*6+C.titles*120+C.defenses*45+(C.belts||[]).length*80+Math.min(150,C.fans/8000)-C.rec.l*4);
+ const t=p>=900?'GOAT':p>=550?'LEYENDA':p>=300?'CAMPEÓN DE ÉPOCA':p>=150?'CONTENDIENTE':p>=50?'PROMESA':'DEBUTANTE';return[Math.max(0,p),t];}
 const CUENTAS=[['Pocket MMA','@pocketmma','org'],['El Profe MMA','@elprofemma','pro'],['Noticias del octágono','@octagononews','pro'],['Fan del barrio','@fan_de_la_jaula','fan']];
 
 function applyGain(s,g){const out=[];for(const k in g){const add=s[k]>=90?1:g[k],nv=Math.min(99,s[k]+add);if(nv>s[k])out.push(`${statName(k)} +${nv-s[k]}`);s[k]=nv;}return out;}
-function genOpp(rank){
- const f=randFighter(),target=rank===0?88:60+(16-rank)*1.7,vals=Object.values(f.s),m=vals.reduce((a,c)=>a+c,0)/vals.length;
+function genOpp(rank,nivel){
+ const f=randFighter(null,C?C.div:'ligero'),target=nivel||(rank===0?88:60+(16-rank)*1.7),vals=Object.values(f.s),m=vals.reduce((a,c)=>a+c,0)/vals.length;
  for(const k in f.s)f.s[k]=clamp(Math.round(f.s[k]-m+target+rand(-2,2)),35,98);
  f.rank=rank;f.div=C?C.div:'ligero';return f;
 }
@@ -56,20 +73,29 @@ function divOpp(rank){
  if(f){const o=JSON.parse(JSON.stringify(f));o.rank=rank;return o;}
  return genOpp(rank);
 }
-const purse=(o,title)=>Math.round(((title?260:0)+12*(17-Math.min(16,o.rank===0?0:o.rank))+20)*1000*(C.contract?C.contract.mult:1)*(1+C.hype/200));
+const purse=(o,title)=>o.regional?Math.round((6+ (o.nivel||55)/6)*1000):Math.round((o.rival?1.5:1)*((title?260:0)+12*(17-Math.min(16,o.rank===0?0:o.rank))+20)*1000*(C.contract?C.contract.mult:1)*(1+C.hype/200));
 function makeOffers(){
  let list;
+ if(regional()){
+  // liga regional: rivales flojos, bolsas chicas; con 3 victorias te contratan
+  const base=50+C.rec.w*3;
+  return[0,1,2].map(i=>{const f=genOpp(16,base+i*3);f.rank=16;f.regional=true;f.nivel=base+i*3;return{f,title:false,weeks:[2,3,3][i]};});
+ }
  if(C.champ)list=[1,2,3].map(r=>({f:divOpp(r),title:true}));
  else if(C.rank===1)list=[{f:divOpp(0),title:true}];
  else{const rs=C.rank>=16?[16,15,14]:[Math.min(16,C.rank+2),C.rank-1,Math.max(1,C.rank-3)];list=[...new Set(rs)].map(r=>({f:divOpp(r),title:false}));}
- return list.map((o,i)=>({...o,weeks:o.title?6:[3,4,5][i%3]}));
+ list=list.map((o,i)=>({...o,weeks:o.title?6:[3,4,5][i%3]}));
+ // revancha con un rival (si hay y no fue la última pelea)
+ const rv=Object.values(C.rivals||{}).filter(r=>r.f.name!==(C.hist[0]&&C.hist[0].opp)).sort((a,b)=>b.heat-a.heat)[0];
+ if(rv&&!C.champ&&rnd()<.7){const f=JSON.parse(JSON.stringify(rv.f));f.rank=Math.max(1,Math.min(16,C.rank+(rnd()<.5?-1:1)));f.rival=true;list.push({f,title:false,weeks:5,rival:true});}
+ return list;
 }
 // Red social: posteos
 function post(quien,arroba,tipo,texto,extra){C.feed.unshift({quien,arroba,tipo,texto,f:C.date,...extra});C.feed=C.feed.slice(0,30);}
 function migrar(){
  if(!C)return;
  const d={date:Date.now(),fans:1200,hype:15,ep:0,money:0,streak:0,titles:C.champ?1:0,feed:[],best:C.rank,fitness:55,longevity:100,injury:0,
-  contract:{total:4,left:4,mult:1,bonoFin:50000,fins:0}};
+  contract:{total:4,left:4,mult:1,bonoFin:50000,fins:0},gym:0,spons:[],rivals:{},belts:C.champ?[C.div]:[],liga:'pro',ageBase:(C.f.bio&&C.f.bio.edad)||26,start:C.date||Date.now()};
  for(const k in d)if(C[k]==null)C[k]=d[k];
  if(C.pop!=null&&C.hype===15)C.hype=C.pop;
  if(C.step==='camp'&&!C.camp)C.step='offers';
@@ -80,16 +106,18 @@ function migrar(){
 migrar();
 function startCareer(f,div){
  const d=JSON.parse(JSON.stringify(f));
+ d.div=div;
  C={div,f:d,rec:{w:0,l:0,d:0},rank:16,best:16,champ:false,defenses:0,titles:0,hist:[],step:'offers',offers:null,opp:null,title:false,camp:null,
-  date:Date.now(),fans:1200,hype:15,ep:0,money:0,streak:0,feed:[],fitness:55,longevity:100,injury:0,
-  contract:{total:4,left:4,mult:1,bonoFin:50000,fins:0},last:''};
+  date:Date.now(),start:Date.now(),ageBase:(d.bio&&d.bio.edad)||22,fans:800,hype:10,ep:0,money:0,streak:0,feed:[],fitness:55,longevity:100,injury:0,
+  contract:{total:4,left:4,mult:1,bonoFin:50000,fins:0},gym:0,spons:[],rivals:{},belts:[],liga:'regional',last:`Empezás en la liga regional: ganá ${REG_WINS} peleas para que Pocket MMA te contrate.`};
  C.offers=makeOffers();
- post(...CUENTAS[0].slice(0,2),'org',`Nuevo nombre en la ${divName(div).toLowerCase()}: ${handle(d)} firma por ${C.contract.total} peleas. ¿Llegará al cinturón?`);
- post(d.name,handle(d),'yo',`Arranca todo. Vamos por el cinturón. 🥊`);
+ post('Liga Regional','@ligaregional','org',`Debut en la liga regional: ${handle(d)} (${divName(div).toLowerCase()}). Los ojeadores de Pocket MMA miran cada pelea.`);
+ post(d.name,handle(d),'yo',`Arranca todo. Desde abajo, como tiene que ser. 🥊`);
  saveC();kTab='inicio';renderCareer();
 }
 /* ---------- Campamento ---------- */
 function aceptarOferta(i){
+ if(C.retired)return;
  const o=C.offers[i];C.opp=o.f;C.title=o.title;C.step='camp';
  const reto=pick(RETOS);
  C.camp={weeks:o.weeks,week:1,time:TIEMPO,studied:false,reto:{id:reto[0],txt:reto[1],acc:null},log:[],trash:0};
@@ -100,10 +128,10 @@ function aceptarOferta(i){
  kLog=[];saveC();kTab='semana';renderCareer();
 }
 function gastar(c){if(C.camp.time<c){kLog.unshift('No te alcanza el tiempo esta semana.');return false;}C.camp.time-=c;return true;}
-function ganaEP(n){C.ep+=n;return`+${n} puntos de evolución`;}
+function ganaEP(n){n=Math.round(n*GYMS[C.gym||0][2]);C.ep+=n;return`+${n} puntos de evolución`;}
 function subeForma(n){
  const antes=C.fitness;C.fitness=clamp(C.fitness+n,0,110);let t=`Forma ${antes}→${Math.min(100,C.fitness)}`;
- if(C.fitness>100&&rnd()<.35){C.injury=2;t+='. ¡Te pasaste y te lesionaste! Descansá para curarte.';}
+ if(C.fitness>100&&rnd()<.35-(C.gym||0)*.07){C.injury=2;t+='. ¡Te pasaste y te lesionaste! Descansá para curarte.';}
  C.fitness=Math.min(100,C.fitness);return t;
 }
 function accion(k,arg){
@@ -180,12 +208,26 @@ function factorForma(){
 function peleadorParaPelea(){
  const p=JSON.parse(JSON.stringify(C.f)),m=factorForma();
  for(const k in p.s)p.s[k]=clamp(Math.round(p.s[k]*m),30,99);
+ // corte de peso agresivo: llegás más grande (más poder) pero con menos aire; si no diste el peso, peor
+ const ct=C.camp&&C.camp.corte;
+ if(ct==='agresivo'){p.s.pow=Math.min(99,p.s.pow+4);p.s.str=Math.min(99,p.s.str+2);p.s.car=Math.max(30,p.s.car-6);}
+ if(C.camp&&C.camp.missed){p.s.car=Math.max(30,p.s.car-6);p.s.chin=Math.max(30,p.s.chin-3);}
+ // edad: después de los 34 se pierde velocidad y mentón
+ const ed=edadDe();if(ed>34){const k=Math.min(10,(ed-34)*2);p.s.spd=Math.max(30,p.s.spd-k);p.s.chin=Math.max(30,p.s.chin-k);}
  p.s.chin=clamp(Math.round(p.s.chin*(.85+.15*C.longevity/100)),30,99);return p;
 }
 function rivalParaPelea(){const o=JSON.parse(JSON.stringify(C.opp));if(C.camp&&C.camp.trash)for(const k in o.s)o.s[k]=Math.min(99,o.s[k]+C.camp.trash);return o;}
+function pesaje(tipo){
+ if(!C.camp||C.camp.corte)return;C.camp.corte=tipo;
+ if(tipo==='agresivo'&&rnd()<.22-(C.gym||0)*.04){C.camp.missed=true;C.hype=Math.max(0,C.hype-5);
+  post(...CUENTAS[2].slice(0,2),'pro',`${handle(C.f)} no dio el peso: pierde el 20 % de la bolsa y pelea deshidratado.`);kLog.unshift('No diste el peso: perdés el 20 % de la bolsa y llegás deshidratado.');}
+ else{kLog.unshift(tipo==='agresivo'?'Corte agresivo: diste el peso justo. Llegás más grande al octágono.':'Corte tranquilo: diste el peso sin problemas.');
+  post(...CUENTAS[2].slice(0,2),'pro',`Pesaje: ${C.f.last} y ${C.opp.last} dieron el peso. Mañana se pelea.`);}
+ saveC();renderCareer();
+}
 function careerFight(){
  const n=C.rec.w+C.rec.l+C.rec.d+1;
- startFight(peleadorParaPelea(),rivalParaPelea(),{kind:'career',rounds:C.title?5:3,title:C.title?(C.champ?'DEFENSA DEL TÍTULO':'PELEA POR EL TÍTULO'):`CARRERA · PELEA ${n}`,onDone(res){applyResult(res);kTab='inicio';showScreen('career');}});
+ startFight(peleadorParaPelea(),rivalParaPelea(),{kind:'career',rounds:C.title?5:3,title:C.title?(C.champ?'DEFENSA DEL TÍTULO':'PELEA POR EL TÍTULO'):regional()?`LIGA REGIONAL · PELEA ${n}`:C.opp.rival?'REVANCHA':`CARRERA · PELEA ${n}`,onDone(res){applyResult(res);kTab='inicio';showScreen('career');}});
 }
 function careerSim(){
  const p=peleadorParaPelea(),r=simFight(p,rivalParaPelea());
@@ -195,10 +237,24 @@ function careerSim(){
 function applyResult(res){
  const opp=C.opp,wasChamp=C.champ,n=C.rec.w+C.rec.l+C.rec.d+1,bolsa=purse(opp,C.title);let txt,cobro=bolsa;
  const fin=res.w==='p'&&!/Decisión/.test(res.method);
+ if(regional()){
+  // liga regional: no hay ranking ni contrato; con REG_WINS victorias te contrata Pocket MMA
+  if(res.w==='p'){C.rec.w++;C.streak=Math.max(1,C.streak+1);cobro=bolsa*2;C.hype=clamp(C.hype+4,0,100);txt=`Ganaste en la liga regional por ${res.method.toLowerCase()}.`;C.ep+=70;}
+  else if(res.w==='r'){C.rec.l++;C.streak=Math.min(-1,C.streak-1);txt=`Perdiste en la liga regional.`;C.ep+=30;}else{C.rec.d++;txt='Empate en la liga regional.';C.ep+=40;}
+  C.fans+=Math.round(res.w==='p'?C.fans*.2+300:80);C.money+=cobro;
+  C.hist.unshift({n,opp:opp.name,orank:'Regional',res:res.w,method:res.method,round:res.round,title:false,f:C.date,bolsa:cobro});
+  if(C.rec.w>=REG_WINS){C.liga='pro';C.rank=16;C.hype=clamp(C.hype+10,0,100);txt+=` ¡POCKET MMA TE OFRECE CONTRATO! Firmás por ${C.contract.total} peleas en la ${divName(C.div).toLowerCase()}.`;
+   post(...CUENTAS[0].slice(0,2),'org',`Nuevo fichaje: ${handle(C.f)} llega desde la liga regional con récord ${C.rec.w}-${C.rec.l}-${C.rec.d}. ¡Bienvenido a la ${divName(C.div).toLowerCase()}!`);}
+  C.date=Math.max(C.date,C.fightDate||C.date)+10*864e5;C.fitness=Math.max(30,C.fitness-25);
+  C.last=txt;C.step='offers';C.opp=null;C.title=false;C.camp=null;C.offers=makeOffers();saveC();return;
+ }
  if(res.w==='p'){
-  C.rec.w++;C.streak=Math.max(1,C.streak+1);cobro=bolsa*2;C.hype=clamp(C.hype+(fin?12:7)+(C.title?10:0),0,100);
+  C.rec.w++;C.streak=Math.max(1,C.streak+1);cobro=bolsa*2;C.hype=clamp(C.hype+(fin?12:7)+(C.title?10:0)+(opp.rival?8:0),0,100);
+  if(opp.rival){delete C.rivals[opp.name];post(C.f.name,handle(C.f),'yo',`Revancha cobrada. ${handle(opp)} ya sabe quién manda. 😤`);}
   if(wasChamp){C.defenses++;txt=`¡Retuviste el título ante ${opp.last}!`;}
-  else if(opp.rank===0){C.champ=true;C.rank=0;C.titles++;txt=`¡${C.f.last.toUpperCase()} ES EL NUEVO CAMPEÓN!`;}
+  else if(opp.rank===0){C.champ=true;C.rank=0;C.titles++;C.belts=C.belts||[];if(!C.belts.includes(C.div))C.belts.push(C.div);
+   txt=C.belts.length>=2?`¡${C.f.last.toUpperCase()} ES CAMPEÓN EN DOS DIVISIONES!`:`¡${C.f.last.toUpperCase()} ES EL NUEVO CAMPEÓN!`;
+   if(C.belts.length>=2)post(...CUENTAS[0].slice(0,2),'org',`🏆🏆 HISTÓRICO: ${handle(C.f)} es DOBLE CAMPEÓN (${C.belts.map(divName).join(' y ').toLowerCase()}).`);}
   else{C.rank=opp.rank<C.rank?opp.rank:Math.max(1,C.rank-1);txt=`Le ganaste a ${opp.last} por ${res.method.toLowerCase()}.`;}
   C.ep+=100+(fin?50:0);
  }else if(res.w==='r'){
@@ -206,9 +262,21 @@ function applyResult(res){
   if(wasChamp){C.champ=false;C.rank=2;txt=`Perdiste el título contra ${opp.last}.`;}
   else{C.rank=Math.min(16,C.rank+2);txt=`Perdiste con ${opp.last} por ${res.method.toLowerCase()}.`;}
   C.ep+=40;
+  // el que te ganó pasa a ser tu rival
+  C.rivals=C.rivals||{};const r=C.rivals[opp.name]||{f:JSON.parse(JSON.stringify(opp)),heat:0};r.heat+=2;C.rivals[opp.name]=r;txt+=` ${opp.last} pasa a ser tu rival: vas a tener revancha.`;
  }else{C.rec.d++;C.streak=0;txt=`Empate con ${opp.last}.`;C.ep+=60;}
  // bonos del contrato y reto de los fans
  if(fin){C.contract.fins++;cobro+=C.contract.bonoFin;txt+=` Bono por finalización: ${fmtMoney(C.contract.bonoFin)}.`;}
+ if(C.camp&&C.camp.missed){cobro=Math.round(cobro*.8);}
+ // trash talk: el rival queda picado aunque le ganes
+ if(C.camp&&C.camp.trash>=2&&res.w!=='r'){C.rivals=C.rivals||{};const r=C.rivals[opp.name]||{f:JSON.parse(JSON.stringify(opp)),heat:0};r.heat+=1;C.rivals[opp.name]=r;}
+ // patrocinadores
+ let sp=0;for(const id of C.spons||[]){const S=SPONS.find(x=>x.id===id);if(!S)continue;sp+=S.pago;
+  if((S.cond==='ganar'&&res.w==='p')||(S.cond==='fin'&&fin)||(S.cond==='titulo'&&C.title))sp+=S.bono;}
+ if(sp){cobro+=sp;txt+=` Patrocinadores: ${fmtMoney(sp)}.`;}
+ // edad
+ const ed=edadDe();if(ed>=33&&rnd()<.5){const k=pick(['spd','car','chin']);if(C.f.s[k]>40){C.f.s[k]--;txt+=` Con ${ed} años el cuerpo lo siente (${statName(k)} −1).`;}}
+ if(C.longevity<=15||ed>=39)txt+=' Tu cuerpo pide el retiro: pensalo en MI CARRERA.';
  const reto=C.camp&&C.camp.reto;
  if(reto&&reto.acc){const R=RETOS.find(x=>x[0]===reto.id);if(R&&R[2](res)){C.hype=clamp(C.hype+10,0,100);C.fans+=Math.round(C.fans*.15);txt+=' ¡Cumpliste el reto de los fans!';}else{C.hype=Math.max(0,C.hype-4);txt+=' No cumpliste el reto de los fans.';}}
  C.fans+=Math.round((res.w==='p'?C.fans*.12:C.fans*.02)+C.hype*400);
@@ -264,7 +332,7 @@ function crHud(){
   </div>
   <div class="cr6-r">${o?`<div class="cr6-vs">${retrato('kHudP')}<div><small>${(C.title?(C.champ?'DEFENSA':'TÍTULO'):'PRÓXIMA PELEA')}</small><b>${esc(C.f.last)}</b><b>vs ${esc(o.last)}</b></div>${retrato('kHudR')}</div>`:`<div class="cr6-vs empty"><small>PRÓXIMA PELEA</small><b>Elegí rival</b></div>`}</div>
  </header>
- <nav class="cr6-tabs">${[['inicio','INICIO'],['semana','SEMANA'],['evolucion','EVOLUCIÓN'+(C.ep>=20?' ●':'')],['ranking','RANKING'],['historial','HISTORIAL']].map(([k,l])=>`<button data-tab="${k}" class="${kTab===k?'on':''}">${l}</button>`).join('')}</nav>`;
+ <nav class="cr6-tabs">${[['inicio','INICIO'],['semana','SEMANA'],['micarrera','MI CARRERA'+(SPONS.some(S=>C.fans>=S.fans&&!(C.spons||[]).includes(S.id)&&(C.spons||[]).length<2)?' ●':'')],['evolucion','EVOLUCIÓN'+(C.ep>=20?' ●':'')],['ranking','RANKING'],['historial','HISTORIAL']].map(([k,l])=>`<button data-tab="${k}" class="${kTab===k?'on':''}">${l}</button>`).join('')}</nav>`;
 }
 function tileContrato(){
  const k=C.contract;
@@ -286,19 +354,20 @@ function tileHito(){
 function heroe(){
  return`<section class="cr6-hero"><canvas id="kPrev" width="96" height="112"></canvas>
   <div class="cr6-name"><small>${handle(C.f)}</small><span>${esc(C.f.first||C.f.name.split(' ')[0])}</span><b>${esc(C.f.last)}</b>
-  <div class="cr6-div">${divName(C.div).toUpperCase()} · ${C.champ?'🏆 CAMPEÓN':C.rank>=16?'SIN RANKING':'#'+C.rank}</div>
-  <div class="cr6-rec">${C.rec.w}-${C.rec.l}-${C.rec.d}${C.champ?` · ${C.defenses} DEFENSAS`:''}</div></div></section>`;
+  <div class="cr6-div">${divName(C.div).toUpperCase()} · ${regional()?'LIGA REGIONAL':C.champ?'🏆 CAMPEÓN':C.rank>=16?'SIN RANKING':'#'+C.rank}</div>
+  ${(C.belts||[]).length?`<div class="cr6-belts">${C.belts.map(b=>`<span title="${divName(b)}">🏆 ${divName(b).replace(/^Peso /,'').toUpperCase()}</span>`).join('')}</div>`:''}
+  <div class="cr6-rec">${C.rec.w}-${C.rec.l}-${C.rec.d}${C.champ?` · ${C.defenses} DEFENSAS`:''} · ${edadDe()} AÑOS</div></div></section>`;
 }
 function panelOfertas(){
- return`<section class="cr6-tile cr6-offers"><h3>${C.champ?'ELEGÍ TU DEFENSA':C.offers[0].title?'¡PELEA POR EL TÍTULO!':'OFERTAS DE PELEA'}</h3>
+ return`<section class="cr6-tile cr6-offers"><h3>${regional()?`LIGA REGIONAL · ${Math.min(C.rec.w,REG_WINS)}/${REG_WINS} VICTORIAS PARA EL CONTRATO`:C.champ?'ELEGÍ TU DEFENSA':C.offers[0].title?'¡PELEA POR EL TÍTULO!':'OFERTAS DE PELEA'}</h3>
   ${C.last?`<p class="cr6-last">${esc(C.last)}</p>`:''}
-  <div class="cr6-olist">${C.offers.map((o,i)=>`<button class="cr6-offer ${o.title?'title':''}" data-of="${i}">${retrato('kOf'+i)}<div><b>${esc(o.f.name)}</b><small>${oppRank(o.f)} · Nivel ${Math.round(ovr(o.f))} · ${o.f.style}</small><small>Campamento: ${o.weeks} semanas · ${o.title?5:3} rounds</small></div><em>${fmtMoney(purse(o.f,o.title))}</em></button>`).join('')}</div>
+  <div class="cr6-olist">${C.offers.map((o,i)=>`<button class="cr6-offer ${o.title?'title':''} ${o.rival?'rival':''}" data-of="${i}">${retrato('kOf'+i)}<div><b>${esc(o.f.name)}</b><small>${o.rival?'🔥 REVANCHA · ':''}${o.f.regional?'Regional':oppRank(o.f)} · Nivel ${Math.round(ovr(o.f))} · ${o.f.style}</small><small>Campamento: ${o.weeks} semanas · ${o.title?5:3} rounds</small></div><em>${fmtMoney(purse(o.f,o.title))}</em></button>`).join('')}</div>
   <p class="cr6-note">Tu nivel: ${Math.round(ovr(C.f))}. Más semanas de campamento = más tiempo para llegar en tu pico.</p></section>`;
 }
 function vistaInicio(){
- const centro=C.step==='offers'?panelOfertas():`${tileRedes(4)}${tileHito()}`;
+ const centro=C.retired?`<section class="cr6-tile"><h3>CARRERA TERMINADA</h3><p class="cr6-last">${esc(C.last)}</p><div class="cr6-actbtns"><button class="cr6-go" data-tab="micarrera">VER TU LEGADO</button></div></section>${tileRedes(3)}`:C.step==='offers'?panelOfertas():`${tileRedes(4)}${tileHito()}`;
  return`<div class="cr6-main"><div class="cr6-colL">${tileContrato()}</div><div class="cr6-colC">${centro}</div>${heroe()}</div>
-  <div class="cr6-bottom"><button class="cr6-btn" id="kEdit">EDITAR PELEADOR</button><button class="cr6-btn" data-tab="redesall">REDES SOCIALES</button><button class="cr6-btn" data-tab="hitos">HITOS</button><button class="cr6-btn danger" id="kReset">NUEVA CARRERA</button></div>`;
+  <div class="cr6-bottom"><button class="cr6-btn" id="kEdit">EDITAR PELEADOR</button><button class="cr6-btn" data-tab="redesall">REDES SOCIALES</button><button class="cr6-btn" data-tab="micarrera">MI CARRERA</button><button class="cr6-btn danger" id="kReset">NUEVA CARRERA</button></div>`;
 }
 function vistaSemana(){
  if(C.step!=='camp'){
@@ -328,7 +397,8 @@ function vistaPelea(){
   <div class="cr6-face2">${retrato('kFP')}<b>VS</b>${retrato('kFR')}</div>
   <div class="cr6-fnames"><div><b>${esc(C.f.name)}</b><small>${C.champ?'Campeón':C.rank>=16?'Sin ranking':'#'+C.rank} · ${C.rec.w}-${C.rec.l}-${C.rec.d}</small></div><div><b>${esc(o.name)}</b><small>${oppRank(o)} · Nivel ${s?Math.round(ovr(o)):'??'}</small></div></div>
   <ul class="cr6-pre"><li><span>Tu forma</span><b class="${m>=1?'ok':'bad'}">${C.fitness} · ${m>=1.03?'en tu pico':m>=1?'bien':'por debajo'}</b></li>${C.injury?'<li><span>Lesión</span><b class="bad">Peleás golpeado</b></li>':''}<li><span>Rival estudiado</span><b class="${s?'ok':''}">${s?'Sí (+3 %)':'No'}</b></li>${cp&&cp.trash?`<li><span>Trash talk</span><b class="bad">Rival motivado (+${cp.trash})</b></li>`:''}<li><span>Reto de los fans</span><b>${r&&r.acc?esc(r.txt):'—'}</b></li><li><span>Bolsa</span><b>${fmtMoney(purse(o,C.title))} (doble si ganás)</b></li></ul>
-  <div class="cr6-actbtns"><button class="cr6-go" id="kFight">PELEAR ▶</button><button class="cr6-btn" id="kSim">DIRECTO AL RESULTADO</button></div></section>
+  ${cp&&!cp.corte?`<div class="cr6-pesaje"><b>PESAJE · ${(DIVISIONES.find(d=>d.id===C.div)||{kg:0}).kg} KG</b><small>Elegí cómo cortar peso antes de pelear.</small><div class="cr6-chips"><button data-pesaje="tranquilo">Corte tranquilo<br><small>sin riesgo</small></button><button data-pesaje="agresivo">Corte agresivo<br><small>+poder, −cardio, puede fallar</small></button></div></div>`
+   :`<div class="cr6-actbtns"><button class="cr6-go" id="kFight">PELEAR ▶</button><button class="cr6-btn" id="kSim">DIRECTO AL RESULTADO</button></div>`}${cp&&cp.missed?'<p class="cr6-note" style="color:#ff7b6b">No diste el peso: −20 % de la bolsa y menos cardio.</p>':''}</section>
   <section class="cr6-tile"><h3>ATRIBUTOS DEL RIVAL</h3>${STATS.map(([k,l])=>`<div class="ks"><span>${l}</span><div class="bar r"><i style="width:${s?o.s[k]:0}%"></i></div><b>${s?o.s[k]:'??'}</b></div>`).join('')}${s?'':'<p class="cr6-note">Estudiá al rival durante el campamento para ver sus números.</p>'}</section></div>`;
 }
 function vistaEvolucion(){
@@ -352,6 +422,35 @@ function vistaHistorial(){
   <section class="cr6-tile"><h3>HITOS</h3>${hitos().map(([t,v,m])=>`<div class="cr6-hrow ${v>=m?'ok':''}"><span>${v>=m?'✓ ':''}${t}</span><b>${m>=1e6?fmtNum(v)+'/'+fmtNum(m):v+'/'+m}</b><i class="cr6-prog"><u style="width:${Math.min(100,v/m*100)}%"></u></i></div>`).join('')}
    <div class="cr6-foot"><span>Ganado en bolsas</span><b>${fmtMoney(C.money)}</b></div><div class="cr6-foot"><span>Efectividad</span><b>${n?Math.round(C.rec.w/n*100)+'%':'—'}</b></div></section></div>`;
 }
+function vistaMiCarrera(){
+ const g=C.gym||0,G=GYMS[g],NX=GYMS[g+1],[lp,lt]=legado(),ed=edadDe();
+ const D=DIVISIONES.find(d=>d.id===C.div),mismas=DIVISIONES.filter(d=>d.g===D.g),i=mismas.indexOf(D),vec=[mismas[i-1],mismas[i+1]].filter(Boolean);
+ const disp=SPONS.filter(S=>!(C.spons||[]).includes(S.id));
+ return`<div class="cr6-grid2">
+  <section class="cr6-tile"><h3>LEGADO · ${lt}</h3><div class="cr6-big">${lp}</div><i class="cr6-prog"><u style="width:${Math.min(100,lp/9)}%"></u></i>
+   <ul class="cr6-pre"><li><span>Edad</span><b>${ed} años</b></li><li><span>Desgaste del cuerpo</span><b class="${C.longevity<30?'bad':''}">${C.longevity}/100</b></li><li><span>Cinturones</span><b>${(C.belts||[]).length?C.belts.map(divName).join(' · '):'—'}</b></li><li><span>Récord</span><b>${C.rec.w}-${C.rec.l}-${C.rec.d}</b></li><li><span>Ganado</span><b>${fmtMoney(C.money)}</b></li></ul>
+   <p class="cr6-note">Después de los 34 se pierde velocidad y mentón. Ganar títulos, defensas y finalizaciones suma legado.</p>
+   ${C.retired?'<p class="cr6-last">Te retiraste. Esta carrera queda como recuerdo.</p>':'<div class="cr6-actbtns"><button class="cr6-btn danger" id="kRetire">RETIRARSE</button></div>'}</section>
+  <section class="cr6-tile"><h3>TU GIMNASIO</h3><div class="cr6-foot"><span>${G[0]}</span><b>Puntos ×${G[2].toFixed(2).replace('.',',')}</b></div>
+   <p class="cr6-note">Mejor gimnasio = más puntos de evolución por entrenar, menos riesgo de lesión y de fallar el peso.</p>
+   ${NX?`<div class="cr6-actbtns"><button class="cr6-go" id="kGym" ${C.money<NX[1]?'disabled':''}>MUDARTE A ${NX[0].toUpperCase()} · ${fmtMoney(NX[1])}</button></div>${C.money<NX[1]?`<p class="cr6-note">Te faltan ${fmtMoney(NX[1]-C.money)}.</p>`:''}`:'<p class="cr6-note">Ya entrenás con el mejor equipo.</p>'}</section>
+  <section class="cr6-tile"><h3>PATROCINADORES · ${(C.spons||[]).length}/2</h3>
+   ${(C.spons||[]).map(id=>{const S=SPONS.find(x=>x.id===id);return`<div class="cr6-spon on"><b>${S.n}</b><small>${fmtMoney(S.pago)} por pelea + ${fmtMoney(S.bono)} ${CONDS[S.cond]}</small><button data-spoff="${S.id}">Dejar</button></div>`;}).join('')}
+   ${disp.map(S=>{const ok=C.fans>=S.fans,full=(C.spons||[]).length>=2;return`<div class="cr6-spon ${ok?'':'off'}"><b>${S.n}</b><small>${fmtMoney(S.pago)} por pelea + ${fmtMoney(S.bono)} ${CONDS[S.cond]}${ok?'':` · necesitás ${fmtNum(S.fans)} fans`}</small><button data-spon="${S.id}" ${ok&&!full?'':'disabled'}>Firmar</button></div>`;}).join('')}</section>
+  <section class="cr6-tile"><h3>CAMBIAR DE DIVISIÓN</h3><p class="cr6-note">${C.champ?'Siendo campeón, subir o bajar te da directo la pelea por el otro cinturón: ¡podés ser doble campeón!':'Probá suerte en otra división. Bajar de peso cuesta forma; subir te hace más chico que los rivales.'}</p>
+   <div class="cr6-actbtns">${regional()||C.step!=='offers'?'<em class="cr6-note">Disponible entre peleas, ya con contrato.</em>':vec.map(d=>`<button class="cr6-btn" data-mvdiv="${d.id}">${d.lb<D.lb?'⬇ BAJAR A':'⬆ SUBIR A'} ${d.nombre.toUpperCase()} (${d.kg} kg)</button>`).join('')}</div></section></div>`;
+}
+function cambiarDivision(id){
+ const D=DIVISIONES.find(d=>d.id===id),antes=C.div;if(!D||C.step!=='offers')return;
+ const baja=D.lb<(DIVISIONES.find(d=>d.id===antes)||D).lb;
+ C.div=id;C.f.div=id;
+ if(C.champ){C.champ=false;C.rank=1;C.last=`Dejás en pausa tu cinturón de ${divName(antes).toLowerCase()} y vas por el de ${D.nombre.toLowerCase()}: te dan la pelea por el título.`;
+  post(...CUENTAS[0].slice(0,2),'org',`¡SUPERPELEA! El campeón ${handle(C.f)} sube por el cinturón de ${D.nombre.toLowerCase()}. ¿Doble campeón?`);}
+ else{C.rank=Math.min(16,C.rank+4);C.last=`Nueva división: ${D.nombre}. Arrancás ${C.rank>=16?'sin ranking':'#'+C.rank}.`;}
+ if(baja){C.fitness=Math.max(20,C.fitness-15);C.longevity=Math.max(0,C.longevity-3);}
+ else{C.f.s.pow=Math.max(35,C.f.s.pow-2);C.f.s.spd=Math.min(99,C.f.s.spd+1);}
+ C.offers=makeOffers();saveC();kTab='inicio';renderCareer();
+}
 function vistaRedes(){return`<div class="cr6-grid2">${tileRedes(30)}<section class="cr6-tile"><h3>TU CUENTA</h3><div class="cr6-foot"><span>${handle(C.f)}</span><b>${fmtNum(C.fans)} seguidores</b></div><p class="cr6-note">Publicá desde la pestaña SEMANA durante el campamento. El trash talk sube más el hype, pero motiva al rival.</p></section></div>`;}
 function renderCareer(){
  const B=$('#kBody');
@@ -369,7 +468,7 @@ function renderCareer(){
   return;
  }
  if(kTab==='pelea'&&C.step!=='fight')kTab='inicio';
- const v={inicio:vistaInicio,semana:vistaSemana,pelea:vistaPelea,evolucion:vistaEvolucion,ranking:vistaRanking,historial:vistaHistorial,hitos:vistaHistorial,redesall:vistaRedes}[kTab]||vistaInicio;
+ const v={micarrera:vistaMiCarrera,inicio:vistaInicio,semana:vistaSemana,pelea:vistaPelea,evolucion:vistaEvolucion,ranking:vistaRanking,historial:vistaHistorial,hitos:vistaHistorial,redesall:vistaRedes}[kTab]||vistaInicio;
  B.innerHTML=crHud()+`<div class="cr6-body">${v()}</div>`;
  const port=(id,f,face)=>{const cv=$('#'+id);if(cv)drawPortrait(cv,f,face);};
  if(C.opp){port('kHudP',C.f,1);port('kHudR',C.opp,-1);port('kFP',C.f,1);port('kFR',C.opp,-1);}
@@ -407,6 +506,13 @@ $('#kBody').addEventListener('click',e=>{
  if(b.dataset.of!=null){aceptarOferta(+b.dataset.of);return;}
  if(b.dataset.act){accion(b.dataset.act,b.dataset.arg);return;}
  if(b.dataset.evo){evolucionar(b.dataset.evo);return;}
+ if(b.dataset.pesaje){pesaje(b.dataset.pesaje);return;}
+ if(b.dataset.spon){C.spons=C.spons||[];if(C.spons.length<2){C.spons.push(b.dataset.spon);const S=SPONS.find(x=>x.id===b.dataset.spon);post(S.n.split(' · ')[0],'@'+S.id,'pro',`Damos la bienvenida a ${handle(C.f)} a nuestro equipo. 💪`);}saveC();renderCareer();return;}
+ if(b.dataset.spoff){C.spons=(C.spons||[]).filter(x=>x!==b.dataset.spoff);saveC();renderCareer();return;}
+ if(b.dataset.mvdiv){cambiarDivision(b.dataset.mvdiv);return;}
+ if(b.id==='kGym'){const NX=GYMS[(C.gym||0)+1];if(NX&&C.money>=NX[1]){C.money-=NX[1];C.gym=(C.gym||0)+1;post(C.f.name,handle(C.f),'yo',`Nueva casa: ${NX[0]}. A seguir creciendo.`);saveC();renderCareer();}return;}
+ if(b.id==='kRetire'){if(!b.dataset.sure){b.dataset.sure='1';b.textContent='¿SEGURO? NO HAY VUELTA';return;}C.retired=true;C.step='retired';const[lp,lt]=legado();C.last=`Te retiraste con ${C.rec.w}-${C.rec.l}-${C.rec.d}. Legado: ${lp} (${lt}).`;
+  post(...CUENTAS[0].slice(0,2),'org',`${handle(C.f)} anuncia su retiro. Gracias por todo, ${lt.toLowerCase()}. 🙏`);saveC();renderCareer();return;}
  if(b.dataset.reto!=null){C.camp.reto.acc=b.dataset.reto==='1';kLog.unshift(C.camp.reto.acc?`Aceptaste el reto: ${C.camp.reto.txt.toLowerCase()}. Si lo cumplís, +hype y fans.`:'Rechazaste el reto de los fans.');if(!C.camp.reto.acc)C.hype=Math.max(0,C.hype-2);saveC();renderCareer();return;}
  if(b.id==='kSimW'||b.id==='kSimW2'){simularSemana();return;}
  if(b.id==='kEndW'){terminarSemana();return;}

@@ -6,7 +6,8 @@ const LOOKOPTS=[
  ['peinado','Peinado','head',null],
  ['pelo','Color de pelo','hairc',['#141110','#3a2416','#6b4423','#a8743a','#d8b46a','#b5502a','#9a9a9a','#e8e4dc']],
  ['skin','Piel','sw',GEN.skins],
- ['shorts','Short','sw',GEN.shorts]
+ ['shorts','Short','sw',GEN.shorts],
+ ['top','Top (peleadoras)','sw',['#16181d','#c8202f','#f4f4f4','#1d4fa3','#1d7a46','#6b2d8f','#e07a1f','#f6d32d']]
 ];
 const BUDGET=560,SMIN=40,SMAX=95;
 let draft=null;
@@ -17,13 +18,13 @@ function baseStats(style){
  for(let i=0;diff!==0&&i<400;i++){const k=ks[i%ks.length];if(diff>0&&s[k]<SMAX){s[k]++;diff--;}else if(diff<0&&s[k]>SMIN){s[k]--;diff++;}}
  return s;
 }
-function newDraft(){draft={id:null,first:'',last:'',nick:'',flag:'ARG',div:'ligero',style:'Completo',look:randFighter().look,s:baseStats('Completo')};}
+function newDraft(){draft={id:null,first:'',last:'',nick:'',flag:'ARG',div:'ligero',style:'Completo',look:randFighter('m').look,s:baseStats('Completo')};}
 function editDraft(f){draft={id:f.id,first:f.first||f.name.split(' ')[0],last:f.last,nick:(f.nick||'').replace(/"/g,''),flag:f.flag,div:f.div||'ligero',style:f.style,look:{...f.look},s:{...f.s}};renderCreate();$('#create').scrollTo({top:0,behavior:'smooth'});}
 function openCreate(){if(!draft)newDraft();renderCreate();}
 const ptsLeft=()=>BUDGET-Object.values(draft.s).reduce((a,c)=>a+c,0);
 function draftFighter(){
  const first=draft.first.trim()||'Tu',last=draft.last.trim()||'Peleador',nick=draft.nick.trim();
- return{id:draft.id,first,name:first+' '+last,last,nick:nick?`"${nick}"`:'',flag:draft.flag,div:draft.div,style:draft.style,s:{...draft.s},look:{...draft.look},custom:1};
+ return{id:draft.id,first,name:first+' '+last,last,nick:nick?`"${nick}"`:'',flag:draft.flag,div:draft.div,g:generoDe(draft.div),style:draft.style,s:{...draft.s},look:{...draft.look},custom:1};
 }
 const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 function optHtml(k,t,opts){
@@ -68,10 +69,13 @@ $('#cLast').oninput=e=>{draft.last=e.target.value;updPrevName();};
 $('#cNick').oninput=e=>{draft.nick=e.target.value;updPrevName();};
 $('#cFlag').onchange=e=>{draft.flag=e.target.value;updPrevName();};
 $('#cDiv').innerHTML=divOptions('ligero',false);
-$('#cDiv').onchange=e=>{draft.div=e.target.value;updPrevName();};
+$('#cDiv').onchange=e=>{const antes=generoDe(draft.div);draft.div=e.target.value;
+ // al pasar a una división femenina (o al revés) se ajusta el look: top y peinado
+ if(generoDe(draft.div)!==antes){if(generoDe(draft.div)==='f'){draft.look.top=draft.look.top||'#16181d';draft.look.peinado=PEIN_F();}else delete draft.look.top;renderLook();}
+ updPrevName();};
 $('#cStyle').onchange=e=>{draft.style=e.target.value;draft.s=baseStats(draft.style);renderStats();updPrevName();};
 function renderLook(){
- $('#cLook').innerHTML=LOOKOPTS.map(([k,l,t,o])=>`<div class="lrow${t==='head'?' lhead':''}"><span class="ll">${l}</span><div class="opts" role="group" aria-label="${l}">${optHtml(k,t,o)}</div></div>`).join('');
+ $('#cLook').innerHTML=LOOKOPTS.filter(([k])=>k!=='top'||generoDe(draft.div)==='f').map(([k,l,t,o])=>`<div class="lrow${t==='head'?' lhead':''}"><span class="ll">${l}</span><div class="opts" role="group" aria-label="${l}">${optHtml(k,t,o)}</div></div>`).join('');
  drawHeadBtns();
 }
 // miniaturas de los peinados (con la piel y el color de pelo elegidos)
@@ -79,7 +83,7 @@ function drawHeadBtns(){
  if(typeof cbListo==='undefined'||cbListo<3)return;
  $('#cLook').querySelectorAll('canvas[data-ph]').forEach(cv=>dibujarCabeza(cv,+cv.dataset.ph,draft.look.skin,draft.look.pelo));
 }
-$('#cRand').onclick=()=>{draft.look=randFighter().look;renderLook();};
+$('#cRand').onclick=()=>{draft.look=randFighter(generoDe(draft.div)).look;renderLook();};
 $('#cNew').onclick=()=>{newDraft();renderCreate();$('#cFirst').focus();};
 $('#cLook').addEventListener('click',e=>{
  const b=e.target.closest('[data-lk]');if(!b)return;

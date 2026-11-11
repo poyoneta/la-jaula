@@ -2,16 +2,15 @@
 const PAISES={ARG:'Argentina',BRA:'Brasil',URU:'Uruguay',CHI:'Chile',PAR:'Paraguay',BOL:'Bolivia',PER:'Perú',COL:'Colombia',VEN:'Venezuela',ECU:'Ecuador',MEX:'México',USA:'EE.UU.',CAN:'Canadá',ESP:'España',ITA:'Italia',FRA:'Francia',IRL:'Irlanda',ENG:'Inglaterra',POL:'Polonia',RUS:'Rusia',KAZ:'Kazajistán',TUR:'Turquía',NGA:'Nigeria',GHA:'Ghana',JPN:'Japón',CHN:'China',KOR:'Corea del Sur',AUS:'Australia',NZL:'Nueva Zelanda',GEO:'Georgia',CMR:'Camerún',BUL:'Bulgaria',MAR:'Marruecos'};
 const CIUDADES={ARG:['Buenos Aires','Córdoba','Rosario','Mar del Plata','La Plata','Mendoza','Tucumán'],BRA:['Río de Janeiro','São Paulo','Curitiba','Manaos','Salvador'],URU:['Montevideo','Salto'],CHI:['Santiago','Valparaíso'],MEX:['Ciudad de México','Tijuana','Guadalajara'],COL:['Medellín','Bogotá','Cali'],PER:['Lima','Arequipa'],PAR:['Asunción'],BOL:['La Paz'],VEN:['Caracas'],ECU:['Quito'],USA:['Las Vegas','Denver','Albuquerque','San Diego','Miami'],CAN:['Montreal','Toronto'],RUS:['Moscú','Grozni','Majachkalá'],JPN:['Tokio','Osaka'],NGA:['Lagos'],TUR:['Estambul'],POL:['Varsovia','Cracovia'],ITA:['Roma','Milán'],FRA:['París','Marsella'],ESP:['Madrid','Barcelona'],KAZ:['Almatý'],IRL:['Dublín'],GHA:['Acra'],ENG:['Londres','Liverpool','Manchester'],AUS:['Sídney','Perth'],GEO:['Tiflis'],KOR:['Seúl'],NZL:['Auckland'],CMR:['Duala'],BUL:['Sofía'],MAR:['Casablanca'],CHN:['Pekín']};
 const GIMNASIOS=['Las Vegas, EE.UU.','Albuquerque, EE.UU.','Coconut Creek, EE.UU.','Denver, EE.UU.','Río de Janeiro, Brasil','Buenos Aires, Argentina','Córdoba, Argentina','Londres, Inglaterra','Sídney, Australia','Ciudad de México, México','Majachkalá, Rusia','Montreal, Canadá'];
-const ALTURAS={mosca:[160,168],gallo:[165,173],pluma:[168,178],ligero:[170,180],welter:[175,185],medio:[180,190],semi:[183,193],pesado:[186,198]};
+
 function hashStr(s){let h=2166136261;for(const ch of s)h=Math.imul(h^ch.charCodeAt(0),16777619);return h>>>0;}
 // Ficha del peleador. Los inventados se completan solos (siempre igual para el mismo nombre).
-// Los reales muestran solo lo que cargues en "bio" (data/peleadores-reales.js).
+// Si el peleador trae "bio" (altura, alcance, edad, récord), se usa eso.
 function bio(f){
  const b=f.bio||{},div=fDiv(f),lb=(DIVISIONES.find(d=>d.id===div)||{lb:155}).lb,kg=Math.round(lb*.4536);
  const apodo=(f.nick||'').replace(/"/g,'')||'—';
- if(f.real)return{apodo,edad:b.edad||'—',altura:b.altura?b.altura+' cm':'—',peso:(b.peso||kg)+' kg',alcance:b.alcance?b.alcance+' cm':'—',posicion:b.posicion||'—',ciudad:b.ciudad||(PAISES[f.flag]||'—'),procedencia:b.procedencia||'—',record:b.record||'—'};
  let h=hashStr(f.name);const r=()=>{h=Math.imul(h^(h>>>15),2246822507);h=Math.imul(h^(h>>>13),3266489909);h^=h>>>16;return(h>>>0)/4294967296;};
- const hr=ALTURAS[div]||[170,180],alt=Math.round(hr[0]+r()*(hr[1]-hr[0])),cs=CIUDADES[f.flag]||['—'];
+ const hr=(DIVISIONES.find(d=>d.id===div)||{alt:[170,180]}).alt,alt=Math.round(hr[0]+r()*(hr[1]-hr[0])),cs=CIUDADES[f.flag]||['—'];
  const rk=f.custom?16:(f.rank??12),w=Math.round(9+(15-Math.min(15,rk))*1.1+r()*6),l=Math.round(1+r()*4+rk*.2),d=r()<.25?1:0;
  return{apodo,edad:b.edad||23+Math.floor(r()*13),altura:(b.altura||alt)+' cm',peso:kg+' kg',alcance:(b.alcance||alt+Math.round(r()*9-2))+' cm',
   posicion:b.posicion||(r()<.75?'Ortodoxo':'Zurdo'),ciudad:b.ciudad||`${cs[Math.floor(r()*cs.length)]}, ${PAISES[f.flag]||f.flag}`,

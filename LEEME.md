@@ -54,9 +54,13 @@ Los scripts se cargan en ese orden desde `index.html`; cada uno usa cosas de los
 
 ## Divisiones y peleadores
 
-Están en `data/peleadores.js`: 8 divisiones (mosca a pesado) con 10 peleadores cada una.
-Cada peleador tiene `div` (su división) y `rank` (0 = campeón, 1 a 9 = ranking).
-Son inventados: para usar los reales, cambiá nombre, apodo, país, estadísticas y look de cada uno.
+Están en `data/peleadores.js`: 13 divisiones con 16 peleadores cada una (campeón + #1 a #15), todos inventados.
+- Masculinas: mosca (57 kg), gallo (61), pluma (66), ligero (70), wélter (77), mediano (84), semipesado (93) y pesado (120).
+- Femeninas: paja (52 kg), mosca (57), gallo (61), pluma (66) y ligero (70).
+Cada peleador tiene altura y alcance acordes a su peso, y atributos coherentes: los pesados pegan
+más fuerte y son más lentos; los livianos son más rápidos y tienen más aire.
+Las peleadoras usan el mismo cuerpo base con top deportivo y sin barba.
+El plantel se generó con un script: si querés cambiarlo, editá el archivo o pedime que lo regenere.
 
 - **Pelea rápida:** elegís la división arriba (o "Todas").
 - **Torneo:** la llave se arma con los 7 mejores de la división que elijas.
@@ -136,7 +140,8 @@ Cubrirse gasta la barra **BLOQUEO**: si se vacía, te rompen la guardia.
 ## 7. Próximos pasos posibles
 
 - Mecánicas tipo Sifu: barra de postura y parada perfecta.
-- Divisiones de peso con peleadores reales (en `data/peleadores.js`).
+- Parches de la comunidad para cargar peleadores y organizaciones reales sin que vengan en el juego.
+- Una hoja de cuerpo base femenino (como la del peleador pelado) para que las peleadoras tengan su propio cuerpo.
 - Supabase para cuentas, guardar partidas y ranking entre amigos.
 - Sprites dibujados con las poses que faltan (recibir golpe, cubrirse, agacharse, KO, piso).
 
@@ -202,3 +207,19 @@ Para que los colores cambien, abrí el juego con **Live Server** (o desde Render
   Se usa en la pantalla de carga y, recortada, en los íconos de `assets/icons/`.
 - `assets/menu/`: escenas del menú hechas con los peleadores genéricos (cuerpo base + peinados).
 - Los scripts que generaron estas imágenes no van en el juego: si querés otras, pedímelas.
+
+## Modo carrera
+
+1. Empezás en la **liga regional**: con 3 victorias, Pocket MMA te ofrece contrato.
+2. Ofertas → **campamento** de 2 a 6 semanas (entrenar, sparring, redes, invitar, estudiar, descansar) → **pesaje** (corte tranquilo o agresivo) → pelea.
+3. **Rivales**: el que te gana (o al que le hiciste mucho trash talk) vuelve como **revancha**, con bolsa ×1,5.
+4. **Mi carrera**: legado, edad y desgaste, **gimnasio** (más puntos por entrenar), **patrocinadores**
+   (se desbloquean con fans), **cambiar de división** (siendo campeón te dan el otro título: doble campeón) y **retiro**.
+5. Después de los 34 años se pierde velocidad y mentón.
+
+## Controles táctiles
+
+En el celular acostado: stick a la izquierda con **CUBRIRSE** y **ESQUIVAR** arriba (se mantienen apretados).
+A la derecha, un botón por golpe con su dibujo: JAB, RECTO, LOW KICK y HIGH KICK grandes; CROSS IZQ., UPPERCUT,
+CROSS DER. y DERRIBO más chicos. En el piso, los tres botones grandes cambian de dibujo (golpear, sumisión, pararse…).
+Los dibujos están en `js/iconos.js`.

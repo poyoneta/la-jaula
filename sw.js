@@ -1,6 +1,6 @@
 /* Service worker de UFC Pocket Edition: guarda el juego en el celular para abrirlo como app y sin internet.
    Cuando cambies algo y lo subas, aumentá VERSION para que los celulares bajen lo nuevo. */
-const VERSION='pmma-v15';
+const VERSION='pmma-v16';
 const ARCHIVOS=[
  "./",
  "index.html",
@@ -11,8 +11,10 @@ const ARCHIVOS=[
  "js/carrera.js",
  "js/config.js",
  "js/crear.js",
+ "js/cuerpos.js",
  "js/dibujo.js",
  "js/fichas.js",
+ "js/iconos.js",
  "js/inicio.js",
  "js/juego.js",
  "js/mando.js",
@@ -23,41 +25,21 @@ const ARCHIVOS=[
  "js/sonido.js",
  "js/tactil.js",
  "js/torneo.js",
- "data/peleadores-reales.js",
+ "data/cuerpo-base.js",
  "data/peleadores.js",
- "data/sprites-reales.js",
  "data/sprites.js",
+ "assets/portada.png",
  "assets/icons/apple-touch-icon.png",
  "assets/icons/icon-192.png",
  "assets/icons/icon-512.png",
  "assets/icons/maskable-512.png",
  "assets/menu/carrera.png",
- "assets/portada.png",
  "assets/menu/crear.png",
  "assets/menu/pelea.png",
  "assets/menu/torneo.png",
- "assets/sprites/alejandro-zanella.png",
- "assets/sprites/base.png",
  "assets/sprites/base-mascara.png",
- "assets/sprites/pelos.png",
- "data/cuerpo-base.js",
- "js/cuerpos.js",
- "assets/sprites/allen.png",
- "assets/sprites/andrusca.png",
- "assets/sprites/brito.png",
- "assets/sprites/costa.png",
- "assets/sprites/emmers.png",
- "assets/sprites/evloev.png",
- "assets/sprites/garcia.png",
- "assets/sprites/lopes.png",
- "assets/sprites/murphy.png",
- "assets/sprites/pico.png",
- "assets/sprites/sabatini.png",
- "assets/sprites/silva.png",
- "assets/sprites/sterling.png",
- "assets/sprites/vallejos.png",
- "assets/sprites/volkanovski.png",
- "assets/sprites/zalal.png"
+ "assets/sprites/base.png",
+ "assets/sprites/pelos.png"
 ];
 // Guardar los archivos de a uno: si alguno falta en el servidor, el resto se guarda igual
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>Promise.allSettled(ARCHIVOS.map(f=>c.add(f)))).then(()=>self.skipWaiting()));});

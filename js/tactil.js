@@ -1,9 +1,9 @@
 /* ---------------- Mando táctil (celular en horizontal) ----------------
-   Botones transparentes encima de la pelea, con la misma distribución que un mando:
-   stick izquierdo: caminar / agacharse · □ jab · △ recto · L1+□ / L1+△ cross izq. / der.
-   L2+□ o △ uppercut · ○ low kick · ✕ high kick · R1 cubrirse · R2 derribo · II pausa
-   En el piso: □ △ ○ son las tres acciones de la botonera. */
-const VP={l1:false,l2:false,stick:null};
+   Botones transparentes con el dibujo de cada golpe (íconos en js/iconos.js):
+   izquierda: stick para caminar + CUBRIRSE y ESQUIVAR (se mantienen apretados)
+   derecha: JAB, RECTO, LOW KICK y HIGH KICK grandes; CROSS IZQ., UPPERCUT, CROSS DER. y DERRIBO más chicos
+   En el piso: JAB / RECTO / LOW KICK pasan a ser las tres acciones del piso (cambian de dibujo). */
+const VP={stick:null};
 const touchDev=matchMedia('(pointer:coarse)');
 const isPortrait=()=>innerHeight>innerWidth;
 const vpActive=()=>touchDev.matches&&!isPortrait()&&!PAD.on;
@@ -22,38 +22,40 @@ const vpActive=()=>touchDev.matches&&!isPortrait()&&!PAD.on;
  st.addEventListener('pointerup',end);st.addEventListener('pointercancel',end);
 })();
 
-// Botones que se mantienen: L1, L2 (modificadores) y R1 (cubrirse)
-document.querySelectorAll('[data-vhold]').forEach(b=>{
- const k=b.dataset.vhold,on=v=>{if(k==='r1')input.block=v;else VP[k]=v;b.classList.toggle('on',v);};
+// Íconos en cada botón
+const ICO_BASE={};document.querySelectorAll('#vpad [data-ico]').forEach(b=>{ICO_BASE[b.dataset.mv||b.dataset.hold||b.id]=[b.dataset.ico,b.querySelector('small')?b.querySelector('small').textContent:''];b.querySelector('i').innerHTML=ICO[b.dataset.ico]||'';});
+// Botones que se mantienen: cubrirse y esquivar (agacharse para que el golpe pase por arriba)
+document.querySelectorAll('[data-hold]').forEach(b=>{
+ const k=b.dataset.hold,on=v=>{if(k==='block')input.block=v;else input.down=v;b.classList.toggle('on',v);};
  b.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();b.setPointerCapture(e.pointerId);on(true);});
  for(const ev of['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>on(false));
 });
-
-// Botones de golpe
-function vpPress(k){
+// Botones de golpe: cada uno tira su golpe. En el piso, jab / recto / low kick pasan a ser las tres acciones del piso.
+function vpPress(b){
  if(!G)return;
  if(G.mode==='ground'){
-  const i={sq:0,tr:1,ci:2}[k];if(i==null)return;
-  const bs=$(G.top==='p'?'#padTop':'#padBot').querySelectorAll('[data-k]');if(bs[i])doG(bs[i].dataset.k);return;
+  const i=b.dataset.g;if(i==null)return;
+  const bs=$(G.top==='p'?'#padTop':'#padBot').querySelectorAll('[data-k]');if(bs[+i])doG(bs[+i].dataset.k);return;
  }
- const m={sq:VP.l1?'hook':VP.l2?'upper':'jab',tr:VP.l1?'hookR':VP.l2?'upper':'cross',ci:'low',x:'high',r2:'td'}[k];
- if(m)doP(m);
+ doP(b.dataset.mv);
 }
-document.querySelectorAll('[data-vb]').forEach(b=>{
- b.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();b.classList.add('on');vpPress(b.dataset.vb);});
+document.querySelectorAll('[data-mv]').forEach(b=>{
+ b.addEventListener('pointerdown',e=>{e.preventDefault();initAudio();b.classList.add('on');vpPress(b);});
  for(const ev of['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>b.classList.remove('on'));
 });
 $('#vpause').addEventListener('click',()=>{if(G)pause(!G.paused);});
 // Que el mando no haga zoom ni scroll, ni abra el menú del navegador al mantener apretado
 $('#vpad').addEventListener('contextmenu',e=>e.preventDefault());
 
-// Textos de los botones según estés parado o en el piso
+// En el piso, los tres botones grandes cambian de ícono y texto
+const ICO_PISO={gnp:'gnp',sub:'sub',up:'up',def:'def',esc:'esc'};
 function vpLabels(m){
  const pad=$('#vpad'),ground=m!=='stand';pad.classList.toggle('ground',ground);
- const lab=(k,t)=>{const s=pad.querySelector(`[data-vb="${k}"] small`);if(s)s.textContent=t;};
- if(!ground){lab('sq','JAB');lab('tr','RECTO');lab('ci','LOW KICK');lab('x','HIGH KICK');return;}
- const bs=[...$(m==='top'?'#padTop':'#padBot').querySelectorAll('[data-k]')].map(b=>b.firstChild.textContent.trim());
- lab('sq',bs[0]||'');lab('tr',bs[1]||'');lab('ci',bs[2]||'');lab('x','');
+ pad.querySelectorAll('[data-g]').forEach(b=>{
+  const[ico,txt]=ICO_BASE[b.dataset.mv];let i=ico,t=txt;
+  if(ground){const k=$(m==='top'?'#padTop':'#padBot').querySelectorAll('[data-k]')[+b.dataset.g];if(k){i=ICO_PISO[k.dataset.k]||ico;t=k.firstChild.textContent.trim();}}
+  b.querySelector('i').innerHTML=ICO[i];b.querySelector('small').textContent=t;
+ });
 }
 
 // Al empezar la pelea en el celular: pantalla completa y horizontal (si el navegador lo permite)

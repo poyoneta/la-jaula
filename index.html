@@ -242,21 +242,21 @@
     <!-- Mando táctil (celular en horizontal) -->
     <div class="vpad" id="vpad" aria-hidden="true">
       <div class="vstick" id="vstick"><div class="vknob" id="vknob"></div><span class="vlab">MOVERSE</span></div>
-      <div class="vsh vl">
-        <button class="vb vs" data-vhold="l2"><b>L2</b><small>UPPER</small></button>
-        <button class="vb vs" data-vhold="l1"><b>L1</b><small>CROSS</small></button>
+      <div class="vleft">
+        <button class="vb vi vhold" data-hold="block" data-ico="block"><i></i><small>CUBRIRSE</small></button>
+        <button class="vb vi vhold" data-hold="duck" data-ico="duck"><i></i><small>ESQUIVAR</small></button>
       </div>
-      <div class="vsh vr">
-        <button class="vb vs" data-vhold="r1"><b>R1</b><small>CUBRIRSE</small></button>
-        <button class="vb vs" data-vb="r2"><b>R2</b><small>DERRIBO</small></button>
+      <div class="vright">
+        <button class="vb vi vm" data-mv="hook" data-ico="hook"><i></i><small>CROSS IZQ.</small></button>
+        <button class="vb vi vm" data-mv="upper" data-ico="upper"><i></i><small>UPPERCUT</small></button>
+        <button class="vb vi vm" data-mv="hookR" data-ico="hookR"><i></i><small>CROSS DER.</small></button>
+        <button class="vb vi vbig" data-mv="jab" data-ico="jab" data-g="0"><i></i><small>JAB</small></button>
+        <button class="vb vi vbig" data-mv="cross" data-ico="cross" data-g="1"><i></i><small>RECTO</small></button>
+        <button class="vb vi vm vtd" data-mv="td" data-ico="td"><i></i><small>DERRIBO</small></button>
+        <button class="vb vi vbig" data-mv="low" data-ico="low" data-g="2"><i></i><small>LOW KICK</small></button>
+        <button class="vb vi vbig" data-mv="high" data-ico="high"><i></i><small>HIGH KICK</small></button>
       </div>
-      <div class="vface">
-        <button class="vb vf t" data-vb="tr"><b>△</b><small>RECTO</small></button>
-        <button class="vb vf s" data-vb="sq"><b>□</b><small>JAB</small></button>
-        <button class="vb vf o" data-vb="ci"><b>○</b><small>LOW KICK</small></button>
-        <button class="vb vf x" data-vb="x"><b>✕</b><small>HIGH KICK</small></button>
-      </div>
-      <button class="vb vpause" id="vpause" aria-label="Pausa"><b>II</b></button>
+      <button class="vb vpause" id="vpause" aria-label="Pausa" data-ico="pausa"><i></i></button>
     </div>
   </section>
 </div>
@@ -273,9 +273,6 @@
 <script src="js/config.js"></script>
 <script src="data/peleadores.js"></script>
 <script src="data/sprites.js"></script>
-<!-- Peleadores reales: solo en tu copia local (borrá estas dos líneas para volver a los inventados) -->
-<script src="data/peleadores-reales.js"></script>
-<script src="data/sprites-reales.js"></script>
 <script src="data/cuerpo-base.js"></script>
 <script src="js/dibujo.js"></script>
 <script src="js/cuerpos.js"></script>
@@ -288,6 +285,7 @@
 <script src="js/carrera.js"></script>
 <script src="js/fichas.js"></script>
 <script src="js/mando.js"></script>
+<script src="js/iconos.js"></script>
 <script src="js/tactil.js"></script>
 <script src="js/nube-config.js"></script>
 <script src="js/nube.js"></script>

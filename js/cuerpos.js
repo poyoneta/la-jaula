@@ -46,7 +46,8 @@ const cbCache=new Map();
 function cuerpoDe(d){
  if(cbListo<3)return null;
  const L=d.look||{},ph=peinadoDe(d),T=hexRGB(L.skin||'#c58a62'),SH=hexRGB(L.shorts||'#16181d'),HC=L.pelo||null;
- const sig=ph+'|'+T.join()+'|'+SH.join()+'|'+HC;
+ const TOP=L.top?hexRGB(L.top):null;
+ const sig=ph+'|'+T.join()+'|'+SH.join()+'|'+HC+'|'+(TOP?TOP.join():'');
  if(cbCache.has(sig)){const S=cbCache.get(sig);cbCache.delete(sig);cbCache.set(sig,S);return S;}
  const PX=16,PT=22;
  // cuadros únicos del cuerpo base
@@ -59,10 +60,38 @@ function cuerpoDe(d){
  let id=null;try{id=g.getImageData(0,0,W,H);}catch(e){}
  if(id){
   const px=id.data,mp=m.getImageData(0,0,W,H).data;
+  // peleadoras: se borra la barba del cuerpo base (pelo oscuro en la parte baja de la cara) pintándola de piel
+  if(TOP)for(const u of uniq.values()){
+   const t=CB.cabeza[u.mv]&&CB.cabeza[u.mv][u.i];if(!t)continue;
+   const cx=u.cx+PX+t[0],cy=H-u.f[3]+t[1],a=(t[2]||0)*Math.PI/180,co=Math.cos(a),si=Math.sin(a);
+   for(let pass=0;pass<3;pass++)for(let yy=Math.floor(cy-16);yy<cy+16;yy++)for(let xx=Math.floor(cx-16);xx<cx+16;xx++){
+    if(xx<1||yy<1||xx>=W-1||yy>=H-1)continue;
+    const dx=xx-cx,dy=yy-cy,lx=dx*co-dy*si,ly=dx*si+dy*co;
+    if(ly<-1||ly>15||Math.abs(lx)>13)continue;
+    const i=(yy*W+xx)*4;if(!px[i+3]||esPiel(px[i],px[i+1],px[i+2]))continue;
+    const lum=(px[i]*.3+px[i+1]*.59+px[i+2]*.11)/255;if(lum<.1||lum>.66)continue;   // contorno negro y brillos quedan
+    // vecino de piel más cercano (para no inventar el tono)
+    let best=null;for(const[ox,oy]of[[1,0],[-1,0],[0,1],[0,-1],[2,0],[-2,0],[0,-2],[0,2]]){const j=((yy+oy)*W+xx+ox)*4;if(j>=0&&j<px.length&&px[j+3]&&esPiel(px[j],px[j+1],px[j+2])){best=j;break;}}
+    if(best==null)continue;px[i]=px[best];px[i+1]=px[best+1];px[i+2]=px[best+2];
+   }
+  }
+  // top deportivo (peleadoras): pinta la piel del pecho, debajo de la cabeza, siguiendo su posición y giro
+  if(TOP)for(const u of uniq.values()){
+   const t=CB.cabeza[u.mv]&&CB.cabeza[u.mv][u.i];if(!t)continue;
+   const cx=u.cx+PX+t[0],cy=H-u.f[3]+t[1],a=(t[2]||0)*Math.PI/180,co=Math.cos(a),si=Math.sin(a);
+   for(let yy=Math.floor(cy-30);yy<cy+30;yy++)for(let xx=Math.floor(cx-30);xx<cx+30;xx++){
+    if(xx<u.cx||xx>=u.cx+u.f[2]+PX*2||yy<0||yy>=H)continue;
+    const dx=xx-cx,dy=yy-cy,lx=dx*co-dy*si,ly=dx*si+dy*co;
+    if(ly<17||ly>27||Math.abs(lx)>12)continue;
+    const i=(yy*W+xx)*4;if(!px[i+3]||mp[i]>128||!esPiel(px[i],px[i+1],px[i+2]))continue;
+    const lum=(px[i]*.3+px[i+1]*.59+px[i+2]*.11)/255,k=.45+.8*lum;
+    for(let c=0;c<3;c++)px[i+c]=Math.min(255,TOP[c]*k+lum*18);px[i+3]=256-1;mp[i+1]=255;
+   }
+  }
   for(let i=0;i<px.length;i+=4){
    if(!px[i+3])continue;
    if(mp[i]>128){const lum=(px[i]*.3+px[i+1]*.59+px[i+2]*.11)/255,k=.62+.95*lum;for(let c=0;c<3;c++)px[i+c]=Math.min(255,SH[c]*k+lum*22);}
-   else recolorPiel(px,i,T);
+   else if(mp[i+1]!==255)recolorPiel(px,i,T);
   }
   g.putImageData(id,0,0);
  }

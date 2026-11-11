@@ -14,7 +14,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1)
 function newTourney(me,div){
  // Los 7 mejores de la división (sin contarte a vos); si faltan, se completan con generados
  const pool=fightersOf(div).filter(f=>f!==me&&!f.custom).slice(0,7);
- while(pool.length<7){const g=randFighter();g.div=div;pool.push(g);}
+ while(pool.length<7){const g=randFighter(null,div);pool.push(g);}
  const ps=[me,...shuffle(pool)];
  T={me,div,stages:[[0,1,2,3].map(i=>({a:ps[i*2],b:ps[i*2+1],w:null,m:''}))],out:false,lostAt:'',champ:null};
 }
