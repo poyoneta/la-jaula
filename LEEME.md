@@ -277,6 +277,19 @@ Los dibujos están en `js/iconos.js`.
   en esa carpeta y sumala a la lista `CARGAS` en `js/carga.js`.
 
 ## Plantel de peleadores (`data/peleadores.js`)
-- Son 208 (13 divisiones × 16: campeón + top 15). Los nombres son **inventados**, pero cada uno está inspirado en un peleador real del ranking de noviembre de 2026: misma división, mismo país, estilo, edad, récord y estadísticas parecidas (por ejemplo, el irlandés del wélter está basado en Ian Garry).
-- Las divisiones femeninas pluma y ligero no existen en la UFC, así que están inspiradas en peleadoras de otras ligas (PFL, Bellator) y algunas promesas inventadas.
+- Son 128 (8 divisiones masculinas × 16: campeón + top 15). Las divisiones femeninas se sacaron por ahora. Los nombres son **inventados**, pero cada uno está inspirado en un peleador real del ranking de noviembre de 2026: misma división, mismo país, estilo, edad, récord y estadísticas parecidas (por ejemplo, el irlandés del wélter está basado en Ian Garry).
+- Cada uno trae un short y unos guantes de tu hoja de ropa (`look.short` y `look.guante`): el short sale con los colores de su país y con el estilo de su forma de pelear (muay thai, boxeo, licra para los luchadores, etc.).
 - Hay banderas nuevas: Georgia, Armenia, Azerbaiyán, Kirguistán, Uzbekistán, Ucrania, Portugal, Alemania, Países Bajos, Suecia, Chequia, Serbia, Croacia, Lituania, Moldavia, Sudáfrica, Irak, Myanmar, Rep. Dominicana y Panamá. También aparecen al crear un peleador.
+
+## Sprites de los peleadores (hoja nueva, más detallada)
+- `assets/sprites/base.png` y `base-mascara.png`: cuerpo base sacado de tu hoja nueva (la de la vista de costado). En la máscara: rojo = short, azul = guantes.
+- Golpes con preparación: antes del jab el peleador dobla el codo, antes del recto y del gancho carga el brazo de atrás, y antes de las patadas (baja y alta) levanta la rodilla. Después pega y vuelve a la guardia.
+- Piso y sumisiones: `assets/sprites/suelo.png` y `suelo-mascara.png`, de tu hoja de los dos peleadores en el piso. Se usan 5 cuadros: control desde arriba, dos de golpes desde arriba, mataleón (sumisión desde arriba) y triángulo (sumisión desde abajo). En la máscara, el rojo dice de quién es cada pixel (255 = el de arriba, 128 = el de abajo) y el verde qué parte es (piel, short, guantes o pelo), así cada uno sale con su piel, su short, sus guantes y su pelo (o pelado).
+- `assets/sprites/pelos.png`: los 48 peinados de tu hoja (la vista de costado, sin la parte rapada), agrupados en Clásico, Corto, Puntas, Rizado, Rastas y Largo. Se eligen en Crear peleador y en Editar peleador del modo carrera.
+- `assets/sprites/ropa.png`: los 40 shorts y los 5 guantes de tu hoja **sin marca**. En la pelea, el dibujo del short elegido se estira sobre el short del cuerpo (se ven las franjas, los bordes dorados del muay thai, el camuflado...), y los guantes toman su color.
+- Los datos (cuadros, centro de la cabeza, peinados, shorts y guantes) están en `data/cuerpo-base.js` (`CUERPO_BASE`).
+
+## Ícono del juego
+- El ícono (lo que ves en el celular cuando tenés el juego instalado) es tu dibujo del campeón con los dos cinturones, recortado sin el logo de arriba.
+- Web: `assets/icons/icon-192.png`, `icon-512.png`, `apple-touch-icon.png` y `maskable-512.png` (con margen para los celulares que lo recortan en círculo).
+- Android: `app/src/main/res/mipmap-*/ic_launcher.png` en el proyecto de la app.
