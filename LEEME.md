@@ -227,7 +227,56 @@ Los dibujos están en `js/iconos.js`.
 ## Música y pantallas de carga
 
 - **Música de los menús** (`js/musica.js`): suena en los menús y se corta en la pelea. Respeta la casilla "Sonido".
-  Si ponés un archivo `assets/musica/menu.mp3`, suena ese en loop en lugar del tema del juego.
+  Hay 5 temas del juego (Jaula · nu metal, Barrio · rap, Walkout · trap, Octágono · thrash, Drift · phonk) que van rotando.
+- **Reproductor** (botón ♪ del menú principal): siguiente/anterior, aleatorio, **agregar tu música** (quedan guardadas en ese
+  celular o navegador) y **Spotify**: pegás el link de una playlist, álbum o tema. Spotify se pausa solo en las peleas.
+  Sin sesión de Spotify iniciada en ese navegador, Spotify solo deja escuchar 30 segundos por tema.
+
+## Promotoras, entrenadores y patrocinadores (`js/promotoras.js`)
+- La carrera arranca en el **Circuito Amateur** (5 peleas, casi sin paga). Con 4 victorias te llama **FFC** (promotora chica),
+  después **ZENIT** o **PCL** (internacionales, con su propio cinturón) y al final **Ultimate Warrior (UW)**, la mejor.
+- 2 KO seguidos en el primer round: te llama antes la siguiente promotora. 3 seguidos: te llama directamente UW.
+  Ganar el cinturón de ZENIT o PCL también te lleva a UW. Si perdés mucho, te cortan y bajás.
+- **Patrocinadores**: marcas deportivas inventadas con logos propios (Jaguara, Voltio, Rebote, Víbora, Trilínea, Titán,
+  Vuelo, Cronos, Vértice). Las grandes solo firman con peleadores de las mejores promotoras. En UW tenés 3 lugares.
+- **Entrenadores** (pestaña EQUIPO): arrancás con Tito, el del barrio. Te aconsejan qué oferta aceptar y qué entrenar
+  contra cada rival; los de más prestigio cobran un % de la bolsa, dan más puntos y estudian al rival por vos.
+  La amistad sube con cada semana y cada pelea juntos: más amistad = menos desgaste del cuerpo y menos lesiones.
+
+## Escenarios (`js/escenarios.js`)
+- 12 lugares dibujados con código: **Las Vegas, Nueva York, Abu Dabi, Riad** (sedes grandes), **Buenos Aires, Río de Janeiro,
+  Ciudad de México** (ciudades), **club de barrio y galpón** (liga regional) y **patio, playa y azotea** (callejeras, sin jaula).
+- En la tribuna hay banderas del país de la sede y de los dos peleadores.
+- Pelea rápida: elegís el escenario (o al azar) en la pantalla de elección de peleadores.
+- Carrera: las primeras peleas son callejeras, después la liga regional; ya en la empresa, las peleas por el título y contra
+  el top 10 son casi siempre en Las Vegas, Nueva York, Abu Dabi o Riad. Torneo: la final en una sede grande.
+- Para sumar un lugar: agregalo a ESCENARIOS con sus colores (y su silueta de ciudad en `skyline`).
+
+## Guardia alta y guardia baja
+- **Guardia alta** (Espacio · R1 · botón GUARDIA ALTA): para golpes a la cabeza y casi todas las high kicks. La low kick entra igual.
+- **Guardia baja** (C o Shift · Espacio+↓ · R1+↓ en el mando · botón GUARDIA BAJA): levantás la rodilla y chequeás la low kick:
+  no te hace daño, el que pateó se lastima la pierna y queda de contra. Pero la cabeza queda abierta (los golpes entran un 15 % más).
+- El rival también chequea, sobre todo si le venís pateando mucho las piernas.
+
+## Piernas y música de entrada
+- La barra PIERNAS es una barra de vida: cada low kick la baja; con la pierna tocada el peleador renguea, se le dobla
+  la pierna y, si llega a cero, pierde por TKO por patadas a la pierna. Entre rounds recupera un poco.
+- Carrera → Editar peleador → **Música de entrada**: suena en la presentación de tus peleas (temas del juego o tus canciones).
+
+## Presentación antes de la pelea (`js/presenta.js`)
+- Barrido rojo con el nombre, los dos peleadores en grande con nombres, división y récord, cartel gigante con la división
+  y una vuelta de cámara alrededor del octágono (dibujado en 3D con pixeles). Tocando la pantalla se salta.
+- Durante la presentación sigue sonando la música del menú; se corta cuando arranca el round.
+
+## Final de la pelea
+- KO con cámara lenta, caída de espaldas con rebote y sangre (gotas que manchan la lona y charco debajo de la cabeza).
+- Después entra el árbitro y le levanta el brazo al ganador (también en las decisiones). El cuadro del brazo en alto
+  se arma con `/gen/brazo.py` a partir del uppercut del cuerpo base.
 - **Pantallas de carga**: al abrir el juego sale al azar la portada o una de `assets/carga/`;
   antes de cada pelea sale una de `assets/carga/` con un consejo. Para agregar más, poné la imagen
   en esa carpeta y sumala a la lista `CARGAS` en `js/carga.js`.
+
+## Plantel de peleadores (`data/peleadores.js`)
+- Son 208 (13 divisiones × 16: campeón + top 15). Los nombres son **inventados**, pero cada uno está inspirado en un peleador real del ranking de noviembre de 2026: misma división, mismo país, estilo, edad, récord y estadísticas parecidas (por ejemplo, el irlandés del wélter está basado en Ian Garry).
+- Las divisiones femeninas pluma y ligero no existen en la UFC, así que están inspiradas en peleadoras de otras ligas (PFL, Bellator) y algunas promesas inventadas.
+- Hay banderas nuevas: Georgia, Armenia, Azerbaiyán, Kirguistán, Uzbekistán, Ucrania, Portugal, Alemania, Países Bajos, Suecia, Chequia, Serbia, Croacia, Lituania, Moldavia, Sudáfrica, Irak, Myanmar, Rep. Dominicana y Panamá. También aparecen al crear un peleador.
