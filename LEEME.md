@@ -293,3 +293,17 @@ Los dibujos están en `js/iconos.js`.
 - El ícono (lo que ves en el celular cuando tenés el juego instalado) es tu dibujo del campeón con los dos cinturones, recortado sin el logo de arriba.
 - Web: `assets/icons/icon-192.png`, `icon-512.png`, `apple-touch-icon.png` y `maskable-512.png` (con margen para los celulares que lo recortan en círculo).
 - Android: `app/src/main/res/mipmap-*/ic_launcher.png` en el proyecto de la app.
+
+## Versión 32
+- Escenarios nuevos con imágenes: fondo de 360° que gira con la cámara y piso visto desde arriba (en `assets/esc2/`).
+  Circuito Amateur: gimnasio, patio, club, favela, Copacabana (sin jaula). FFC: Rosario, São Paulo, estadio de Buenos Aires, Mendoza, Montevideo.
+  ZENIT: México, Medellín, Santiago, Lima, carpa del Obelisco. PCL y UW siguen con los de antes hasta que estén sus imágenes.
+- Piso con las hojas nuevas de dos peleadores (`assets/sprites2/suelo2.png`): derribo, control, golpes desde arriba, mataleón y escape para pararse.
+  El short de cada uno toma su color. Las barras del piso van debajo de los nombres.
+
+## Versión 31: sprites nuevos, 8 direcciones, menú nuevo y colores por división
+- **Sprites nuevos** (`assets/sprites2/`, `data/cuerpo2.js`, `js/cuerpos2.js`): un solo peleador base de tus hojas nuevas (4 a 6 cuadros por golpe). Por código se le cambian piel, short (los 20 diseños del catálogo; el rojo del diseño toma el color elegido), guantes, peinado (8) y barba (8), con el color de pelo. Se usan en la pelea parada, en la presentación y en la vista previa de Crear peleador / Carrera.
+- **Moverse en 8 direcciones** (`js/jaula3d.js`): ↑ ↓ (o el stick / la cruz para arriba y abajo) te corre al costado y la línea de pelea gira; la cámara la sigue, así que el octógono, el público y la reja giran. Si el rival tira y estás corrido de la línea, el golpe pasa de largo (¡LO ESQUIVASTE!). El rival también se corre y te rodea.
+- El piso (golpes en el suelo y sumisiones) sigue con el dibujo anterior por ahora.
+- **Menú nuevo** (`css/menu2.css`, `assets/menu2/`): tarjetas grandes con el arte de tu imagen: Modos de pelea, Modo carrera, Modo torneo, Crear peleador, ¿Necesitás ayuda?, Peleadores al azar y Perfil.
+- **Presentación con colores por división**: mosca lila, gallo turquesa, pluma blanca, ligero roja, wélter azul, mediano verde, semipesado naranja y pesado negro con dorado.
